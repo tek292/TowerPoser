@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory>
+        <EditTextPreference
+            android:key="@string/pref_distance_key"
+            android:title="@string/pref_distance_title"
+            android:defaultValue="@string/pref_distance_default"/>
+    </PreferenceCategory>
+
+</PreferenceScreen>

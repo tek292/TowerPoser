@@ -1,13 +1,10 @@
 package com.riis.towerpower.util;
 
-import android.content.SharedPreferences;
 import android.net.Uri;
-import android.preference.PreferenceManager;
 
 import com.riis.towerpower.models.Consts;
 import com.riis.towerpower.models.Tower;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -25,7 +22,16 @@ import java.util.Iterator;
  */
 public class TowerPowerRetriever
 {
-    private final String NETWORK_RANK = "networkRank";
+    private static final String AVERAGE_RSSI_ASU = "averageRssiAsu";
+    private static final String AVERAGE_RSSI_DB = "averageRssiDb";
+    private static final String DOWNLOAD_SPEED = "downloadSpeed";
+    private static final String NETWORK_NAME = "networkName";
+    private static final String NETWORK_RANK = "networkRank";
+    private static final String NETWORK_TYPE = "networkType";
+    private static final String PING_TIME = "pingTime";
+    private static final String SAMPLE_SIZE_RSSI = "sampleSizeRSSI";
+    private static final String RELIABILITY = "reliability";
+    private static final String UPLOAD_SPEED = "uploadSpeed";
 
     private Consts mConsts;
 
@@ -46,10 +52,14 @@ public class TowerPowerRetriever
      */
     public String send(String latitude, String longitude, String distance)
     {
+        if(latitude == null || longitude == null || latitude.isEmpty() || longitude.isEmpty())
+        {
+            return null;
+        }
+
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
         Uri uri = Uri.parse(mConsts.getTowerInformation(latitude, longitude));
-        String responseString = null;
 
         try {
             URL url = new URL(uri.toString());
@@ -64,9 +74,9 @@ public class TowerPowerRetriever
             }
 
             reader = new BufferedReader(new InputStreamReader(inputStream));
-            urlConnection.disconnect();
-            responseString = reader.readLine();
+            String responseString = reader.readLine();
             reader.close();
+            urlConnection.disconnect();
 
             return responseString;
         } catch (IOException e) {
@@ -94,14 +104,14 @@ public class TowerPowerRetriever
      *      An array Strings from the Json response
      * @throws JSONException
      */
-    public String[] getTowerPower(String json) throws JSONException
+    public ArrayList<Tower> getTowerPower(String json) throws JSONException
     {
         ArrayList<Tower> towerList = new ArrayList<>();
-        JSONObject networkRankJson = new JSONObject(NETWORK_RANK);
+        JSONObject jsonObject = new JSONObject(json);
+        JSONObject networkRankJson = jsonObject.getJSONObject(NETWORK_RANK);
 
         //Reference: http://stackoverflow.com/questions/7304002/how-to-parse-a-dynamic-json-key-in-a-nested-json-result
         Iterator keys = networkRankJson.keys();
-
         while(keys.hasNext())
         {
             String network = (String) keys.next();
@@ -109,62 +119,52 @@ public class TowerPowerRetriever
             Iterator networkKeys = networkObject.keys();
 
             //Dynamically grab network types, instead of hard-coding 2G, 3G, etc.
-            while(keys.hasNext())
+            while(networkKeys.hasNext())
             {
                 String networkType = (String) networkKeys.next();
                 JSONObject towerObject = networkObject.getJSONObject(networkType);
 
-                Tower tower = new Tower(towerObject.getString("networkName"), towerObject.getInt("networkType"));
+                Tower tower = new Tower(towerObject.getString(NETWORK_NAME), towerObject.getInt(NETWORK_TYPE));
+
+                if(!towerObject.isNull(AVERAGE_RSSI_ASU))
+                {
+                    tower.setAverageRSSIAsu(towerObject.getDouble(AVERAGE_RSSI_ASU));
+                }
+
+                if(!towerObject.isNull(AVERAGE_RSSI_DB))
+                {
+                    tower.setAverageRSSIDb(towerObject.getDouble(AVERAGE_RSSI_DB));
+                }
+
+                if(!towerObject.isNull(SAMPLE_SIZE_RSSI))
+                {
+                    tower.setSampleSizeRSSI(towerObject.getDouble(SAMPLE_SIZE_RSSI));
+                }
+
+                if(!towerObject.isNull(DOWNLOAD_SPEED))
+                {
+                    tower.setDownloadSpeed(towerObject.getDouble(DOWNLOAD_SPEED));
+                }
+
+                if(!towerObject.isNull(UPLOAD_SPEED))
+                {
+                    tower.setUploadSpeed(towerObject.getDouble(UPLOAD_SPEED));
+                }
+
+                if(!towerObject.isNull(PING_TIME))
+                {
+                    tower.setPingTime(towerObject.getDouble(PING_TIME));
+                }
+
+                if(!towerObject.isNull(RELIABILITY))
+                {
+                    tower.setReliability(towerObject.getDouble(RELIABILITY));
+                }
+
                 towerList.add(tower);
             }
         }
 
-//        JSONArray weatherArray = networkRankJson.get;
-
-//        String[] resultStrs = new String[numDays];
-
-        // Data is fetched in Celsius by default.
-        // If user prefers to see in Fahrenheit, convert the values here.
-        // We do this rather than fetching in Fahrenheit so that the user can
-        // change this option without us having to re-fetch the data once
-        // we start storing the values in a database.
-//        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(mContext);
-//        String unitType = sharedPrefs.getString(mContext.getString(R.string.pref_units_key),
-//                mContext.getString(R.string.pref_units_metric));
-//
-//        for(int i = 0; i < weatherArray.length(); i++)
-//        {
-//            // For now, using the format "Day, description, hi/low"
-//            String day;
-//            String description;
-//            String highAndLow;
-//
-//            // Get the JSON object representing the day
-//            JSONObject dayForecast = weatherArray.getJSONObject(i);
-//
-//            // The date/time is returned as a long.  We need to convert that
-//            // into something human-readable, since most people won't read "1400356800" as
-//            // "this saturday".
-//            long dateTime;
-//            // Cheating to convert this to UTC time, which is what we want anyhow
-//            dateTime = dayTime.setJulianDay(julianStartDay+i);
-//            day = getReadableDateString(dateTime);
-//
-//            // description is in a child array called "weather", which is 1 element long.
-//            JSONObject weatherObject = dayForecast.getJSONArray(OWM_WEATHER).getJSONObject(0);
-//            description = weatherObject.getString(OWM_DESCRIPTION);
-//
-//            // Temperatures are in a child object called "temp".  Try not to name variables
-//            // "temp" when working with temperature.  It confuses everybody.
-//            JSONObject temperatureObject = dayForecast.getJSONObject(OWM_TEMPERATURE);
-//            double high = temperatureObject.getDouble(OWM_MAX);
-//            double low = temperatureObject.getDouble(OWM_MIN);
-//
-//            highAndLow = formatHighLows(high, low, unitType);
-//            resultStrs[i] = day + " - " + description + " - " + highAndLow;
-//        }
-//
-//        return resultStrs;
-        return null;
+        return towerList;
     }
 }

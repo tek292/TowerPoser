@@ -6,13 +6,13 @@ package com.riis.towerpower.models;
 public class Tower
 {
     private int mNetworkType;
-    private float mAverageRSRPAsu;
-    private float mAverageRSRPDb;
-    private float mSampleSizeRSRP;
-    private float mDownloadSpeed;
-    private float mUploadSpeed;
-    private float mPingTime;
-    private float mReliability;
+    private double mAverageRSSIAsu;
+    private double mAverageRSSIDb;
+    private double mSampleSizeRSSI;
+    private double mDownloadSpeed;
+    private double mUploadSpeed;
+    private double mPingTime;
+    private double mReliability;
     private String mNetworkName;
 
     public Tower(String name, int type)
@@ -31,72 +31,72 @@ public class Tower
         return mNetworkType;
     }
 
-    public float getAverageRSRPAsu()
+    public double getAverageRSSIAsu()
     {
-        return mAverageRSRPAsu;
+        return mAverageRSSIAsu;
     }
 
-    public void setAverageRSRPAsu(float averageRSRPAsu)
+    public void setAverageRSSIAsu(double averageRSRPAsu)
     {
-        this.mAverageRSRPAsu = averageRSRPAsu;
+        this.mAverageRSSIAsu = averageRSRPAsu;
     }
 
-    public float getAverageRSRPDb()
+    public double getAverageRSSIDb()
     {
-        return mAverageRSRPDb;
+        return mAverageRSSIDb;
     }
 
-    public void setAverageRSRPDb(float averageRSRPDb)
+    public void setAverageRSSIDb(double averageRSRPDb)
     {
-        this.mAverageRSRPDb = averageRSRPDb;
+        this.mAverageRSSIDb = averageRSRPDb;
     }
 
-    public float getSampleSizeRSRP()
+    public double getSampleSizeRSSI()
     {
-        return mSampleSizeRSRP;
+        return mSampleSizeRSSI;
     }
 
-    public void setSampleSizeRSRP(float sampleSizeRSRP)
+    public void setSampleSizeRSSI(double sampleSizeRSRP)
     {
-        this.mSampleSizeRSRP = sampleSizeRSRP;
+        this.mSampleSizeRSSI = sampleSizeRSRP;
     }
 
-    public float getDownloadSpeed()
+    public double getDownloadSpeed()
     {
         return mDownloadSpeed;
     }
 
-    public void setDownloadSpeed(float downloadSpeed)
+    public void setDownloadSpeed(double downloadSpeed)
     {
         this.mDownloadSpeed = downloadSpeed;
     }
 
-    public float getUploadSpeed()
+    public double getUploadSpeed()
     {
         return mUploadSpeed;
     }
 
-    public void setUploadSpeed(float uploadSpeed)
+    public void setUploadSpeed(double uploadSpeed)
     {
         this.mUploadSpeed = uploadSpeed;
     }
 
-    public float getPingTime()
+    public double getPingTime()
     {
         return mPingTime;
     }
 
-    public void setPingTime(float pingTime)
+    public void setPingTime(double pingTime)
     {
         this.mPingTime = pingTime;
     }
 
-    public float getReliability()
+    public double getReliability()
     {
         return mReliability;
     }
 
-    public void setReliability(float reliability)
+    public void setReliability(double reliability)
     {
         this.mReliability = reliability;
     }
