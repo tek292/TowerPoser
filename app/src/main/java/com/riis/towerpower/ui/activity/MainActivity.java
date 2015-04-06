@@ -28,10 +28,6 @@ import java.util.ArrayList;
  */
 public class MainActivity extends ActionBarActivity
 {
-    private ArrayList<Tower> mFullTowerList;
-    private GPSTrackerService mGPSTrackerService;
-    private ViewPager mCellTowerViewPager;
-
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -64,7 +60,7 @@ public class MainActivity extends ActionBarActivity
 
     private void setUpViews()
     {
-        mCellTowerViewPager = (ViewPager) findViewById(R.id.cell_tower_pager);
-        mCellTowerViewPager.setAdapter(new CellTowerPagerAdapter(this, getSupportFragmentManager()));
+        ViewPager cellTowerViewPager = (ViewPager) findViewById(R.id.cell_tower_pager);
+        cellTowerViewPager.setAdapter(new CellTowerPagerAdapter(this, getSupportFragmentManager()));
     }
 }

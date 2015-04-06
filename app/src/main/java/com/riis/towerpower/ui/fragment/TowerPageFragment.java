@@ -8,6 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.riis.towerpower.R;
 import com.riis.towerpower.models.Tower;
@@ -23,7 +24,6 @@ public class TowerPageFragment extends Fragment
 {
     private ArrayList<Tower> mTowerData;
     private eNetworkType mNetworkType;
-    private RecyclerView mTowerList;
 
     public TowerPageFragment newInstance(eNetworkType type, ArrayList<Tower> towerList)
     {
@@ -45,14 +45,15 @@ public class TowerPageFragment extends Fragment
 
     private void setUpViews(View rootView)
     {
-        mTowerList = (RecyclerView) rootView.findViewById(R.id.data_list);
+        RecyclerView towerList = (RecyclerView) rootView.findViewById(R.id.data_list);
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        mTowerList.setAdapter(new TowerListAdapter(mTowerData, mNetworkType));
+        towerList.setAdapter(new TowerListAdapter(mTowerData, mNetworkType));
 
         if(mTowerData.size() == 0)
         {
-            mTowerList.setVisibility(View.INVISIBLE);
+            towerList.setVisibility(View.GONE);
+            rootView.findViewById(R.id.no_data_textview).setVisibility(View.VISIBLE);
         }
     }
 }

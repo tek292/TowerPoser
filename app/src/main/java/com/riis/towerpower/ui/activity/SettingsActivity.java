@@ -1,12 +1,14 @@
 package com.riis.towerpower.ui.activity;
 
 import android.os.Bundle;
+import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 
 import com.riis.towerpower.R;
+import com.riis.towerpower.models.Consts;
 
 public class SettingsActivity extends PreferenceActivity implements Preference.OnPreferenceChangeListener
 {
@@ -24,7 +26,21 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
     {
         String stringValue = newValue.toString();
 
-        if (preference instanceof ListPreference)
+        if(preference instanceof EditTextPreference)
+        {
+            Double doubleValue = Double.parseDouble(stringValue);
+            Double kilometerValue = Consts.convertMilesToKilometers(doubleValue);
+
+            if(kilometerValue > 16.0934)
+            {
+                ((EditTextPreference) preference).getEditText().setError("");
+            }
+            else
+            {
+                preference.setSummary(doubleValue.toString());
+            }
+        }
+        else if (preference instanceof ListPreference)
         {
             ListPreference listPreference = (ListPreference) preference;
             int prefIndex = listPreference.findIndexOfValue(stringValue);

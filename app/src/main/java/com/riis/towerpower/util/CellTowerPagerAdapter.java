@@ -17,6 +17,8 @@ import com.riis.towerpower.ui.fragment.TowerPageFragment;
 import org.json.JSONException;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 /**
  * @author tkocikjr
@@ -49,16 +51,16 @@ public class CellTowerPagerAdapter extends FragmentPagerAdapter
                 towerPageFragment = new TowerPageFragment().newInstance(eNetworkType.ATT, mAttTowerList);
                 break;
             case 1:
-                towerPageFragment = new TowerPageFragment().newInstance(eNetworkType.SPRINT, mAttTowerList);
+                towerPageFragment = new TowerPageFragment().newInstance(eNetworkType.SPRINT, mSprintTowerList);
                 break;
             case 2:
-                towerPageFragment = new TowerPageFragment().newInstance(eNetworkType.TMOBILE, mAttTowerList);
+                towerPageFragment = new TowerPageFragment().newInstance(eNetworkType.TMOBILE, mTMobileTowerList);
                 break;
             case 3:
-                towerPageFragment = new TowerPageFragment().newInstance(eNetworkType.VERIZON, mAttTowerList);
+                towerPageFragment = new TowerPageFragment().newInstance(eNetworkType.VERIZON, mVerizonTowerList);
                 break;
             default:
-                towerPageFragment = new TowerPageFragment().newInstance(eNetworkType.OTHER, mAttTowerList);
+                towerPageFragment = new TowerPageFragment().newInstance(eNetworkType.OTHER, mOtherTowerList);
                 break;
         }
         return towerPageFragment;
@@ -70,23 +72,23 @@ public class CellTowerPagerAdapter extends FragmentPagerAdapter
         return 5;
     }
 
-    private void sortTowerData(ArrayList<Tower> fullTowerList)
+    private void sortTowerDataByNetworkName(ArrayList<Tower> fullTowerList)
     {
         for(Tower tower : fullTowerList)
         {
-            if(tower.getNetworkName().equals("AT&T"))
+            if(tower.getNetworkName().equals(mContext.getString(R.string.at_t)))
             {
                 mAttTowerList.add(tower);
             }
-            else if(tower.getNetworkName().equals("Sprint"))
+            else if(tower.getNetworkName().equals(mContext.getString(R.string.sprint)))
             {
                 mSprintTowerList.add(tower);
             }
-            else if(tower.getNetworkName().equals("T-Mobile"))
+            else if(tower.getNetworkName().equals(mContext.getString(R.string.t_mobile)))
             {
                 mTMobileTowerList.add(tower);
             }
-            else if(tower.getNetworkName().equals("Verizon"))
+            else if(tower.getNetworkName().equals(mContext.getString(R.string.verizon)))
             {
                 mVerizonTowerList.add(tower);
             }
@@ -95,6 +97,24 @@ public class CellTowerPagerAdapter extends FragmentPagerAdapter
                 mOtherTowerList.add(tower);
             }
         }
+    }
+
+    private void sortTowerDataByNetworkType()
+    {
+        Comparator<Tower> comparator = new Comparator<Tower>()
+        {
+            @Override
+            public int compare(Tower lhs, Tower rhs)
+            {
+                return lhs.getNetworkType() - rhs.getNetworkType();
+            }
+        };
+
+        Collections.sort(mAttTowerList, comparator);
+        Collections.sort(mSprintTowerList, comparator);
+        Collections.sort(mTMobileTowerList, comparator);
+        Collections.sort(mVerizonTowerList, comparator);
+        Collections.sort(mOtherTowerList, comparator);
     }
 
     private class TowerRetrievalTask extends AsyncTask<Void, Void, Void>
@@ -160,7 +180,8 @@ public class CellTowerPagerAdapter extends FragmentPagerAdapter
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            sortTowerData(mFullTowerList);
+            sortTowerDataByNetworkName(mFullTowerList);
+            sortTowerDataByNetworkType();
             notifyDataSetChanged();
             mProgressDialog.dismiss();
         }
