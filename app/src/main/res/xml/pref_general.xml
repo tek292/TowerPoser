@@ -4,7 +4,8 @@
         <EditTextPreference
             android:key="@string/pref_distance_key"
             android:title="@string/pref_distance_title"
-            android:defaultValue="@string/pref_distance_default"/>
+            android:defaultValue="@string/pref_distance_default"
+            android:inputType="number"/>
     </PreferenceCategory>
 
 </PreferenceScreen>

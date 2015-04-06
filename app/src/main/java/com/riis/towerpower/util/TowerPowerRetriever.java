@@ -59,7 +59,7 @@ public class TowerPowerRetriever
 
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
-        Uri uri = Uri.parse(mConsts.getTowerInformation(latitude, longitude));
+        Uri uri = Uri.parse(mConsts.getTowerInformation(latitude, longitude, distance));
 
         try {
             URL url = new URL(uri.toString());
