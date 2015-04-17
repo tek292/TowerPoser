@@ -1,9 +1,11 @@
 package com.riis.towerpower.util;
 
-import android.support.v7.widget.RecyclerView;
+import android.content.Context;
+import android.database.Cursor;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CursorAdapter;
 import android.widget.TextView;
 
 import com.riis.towerpower.R;
@@ -15,64 +17,56 @@ import java.util.ArrayList;
 /**
  * @author tkocikjr
  */
-public class TowerListAdapter extends RecyclerView.Adapter<TowerListAdapter.TowerListViewHolder>
+public class TowerListAdapter extends CursorAdapter
 {
     private ArrayList<Tower> mTowerList;
     private eNetworkType mNetworkType;
 
-    public TowerListAdapter(ArrayList<Tower> towerList, eNetworkType type)
+    public TowerListAdapter(Context context, Cursor cursor, eNetworkType type)
     {
-        mTowerList = towerList;
+        super(context, cursor, false);
         mNetworkType = type;
     }
 
     @Override
-    public TowerListAdapter.TowerListViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
+    public View newView(Context context, Cursor cursor, ViewGroup parent)
     {
         if(mNetworkType == eNetworkType.OTHER)
         {
             View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_other_network, parent, false);
-            return new TowerListViewHolder(v, mNetworkType);
+            TowerListViewHolder viewHolder = new TowerListViewHolder();
+            viewHolder.networkName = (TextView) v.findViewById(R.id.network_name_text_view);
+            viewHolder.reliability = (TextView) v.findViewById(R.id.reliability_text_view);
+            v.setTag(viewHolder);
+            return v;
         }
         else
         {
             View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_main_network, parent, false);
-            return new TowerListViewHolder(v, mNetworkType);
+            TowerListViewHolder viewHolder = new TowerListViewHolder();
+            viewHolder.networkName = null;
+            viewHolder.reliability = (TextView) v.findViewById(R.id.reliability_text_view);
+            v.setTag(viewHolder);
+            return v;
         }
     }
 
     @Override
-    public void onBindViewHolder(TowerListAdapter.TowerListViewHolder holder, int position)
+    public void bindView(View view, Context context, Cursor cursor)
     {
-        if(mNetworkType == eNetworkType.OTHER)
-        {
-            holder.networkName.setText(mTowerList.get(position).getNetworkName());
-        }
+        TowerListViewHolder viewHolder = (TowerListViewHolder) view.getTag();
 
-        holder.reliability.setText(Double.toString(mTowerList.get(position).getReliability()));
+//        if(mNetworkType == eNetworkType.OTHER)
+//        {
+//            viewHolder.networkName.setText(mTowerList.get(position).getNetworkName());
+//        }
+//
+//        viewHolder.reliability.setText(Double.toString(mTowerList.get(position).getReliability()));
     }
 
-    @Override
-    public int getItemCount()
-    {
-        return mTowerList.size();
-    }
-
-    final static class TowerListViewHolder extends RecyclerView.ViewHolder
+    private static class TowerListViewHolder
     {
         TextView networkName;
         TextView reliability;
-
-        public TowerListViewHolder(View itemView, eNetworkType networkType)
-        {
-            super(itemView);
-
-            reliability = (TextView) itemView.findViewById(R.id.reliability_text_view);
-
-            if(networkType == eNetworkType.OTHER)
-            {
-                networkName = (TextView) itemView.findViewById(R.id.network_name_text_view);
-            }
-        }
     }
 }

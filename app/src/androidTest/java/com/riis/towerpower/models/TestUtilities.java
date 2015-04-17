@@ -1,4 +1,4 @@
-package com.riis.towerpower.data;
+package com.riis.towerpower.models;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -10,7 +10,6 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.test.AndroidTestCase;
 
-
 import com.riis.towerpower.utils.PollingCheck;
 
 import java.util.Map;
@@ -18,8 +17,6 @@ import java.util.Set;
 
 public class TestUtilities extends AndroidTestCase
 {
-    static final long TEST_NETWORK_ID = 1L;
-
     static void validateCursor(String error, Cursor valueCursor, ContentValues expectedValues)
     {
         assertTrue("Empty cursor returned. " + error, valueCursor.moveToFirst());
@@ -55,20 +52,19 @@ public class TestUtilities extends AndroidTestCase
         }
     }
 
-    static ContentValues createNorthPoleLocationValues()
+    static ContentValues createSanFranciscoLocationValues()
     {
         ContentValues testValues = new ContentValues();
-        testValues.put(TowerContract.DbLocation.COLUMN_TOWER_ID, 1);
         testValues.put(TowerContract.DbLocation.COLUMN_LATITUDE, 64.7488);
         testValues.put(TowerContract.DbLocation.COLUMN_LONGITUDE, -147.353);
         return testValues;
     }
 
     // All values taken from http://developer.opensignal.com/networkrank/
-    static ContentValues createNorthPoleTowerValues(long networkRowId)
+    static ContentValues createSanFranciscoTowerValues()
     {
         ContentValues testValues = new ContentValues();
-        testValues.put(TowerContract.DbTower.COLUMN_NETWORK_TYPE, networkRowId);
+        testValues.put(TowerContract.DbTower.COLUMN_NETWORK_TYPE, 4);
         testValues.put(TowerContract.DbTower.COLUMN_NAME, "T-Mobile");
         testValues.put(TowerContract.DbTower.COLUMN_AVERAGE_RSSI_ASU, 15.235661);
         testValues.put(TowerContract.DbTower.COLUMN_AVERAGE_RSSI_DB, -82.528677);
@@ -80,21 +76,23 @@ public class TestUtilities extends AndroidTestCase
         return testValues;
     }
 
-    static ContentValues createNorthPoleNetworkValues()
+    static ContentValues createSanFranciscoTowerLocationValues()
     {
         ContentValues testValues = new ContentValues();
-        testValues.put(TowerContract.DbNetwork.COLUMN_NAME, "4");
+        testValues.put(TowerContract.DbLocationTower.COLUMN_LOCATION_ID, 1);
+        testValues.put(TowerContract.DbLocationTower.COLUMN_TOWER_ID, 1);
         return testValues;
     }
 
-    static long insertNorthPoleLocationValues(Context context) {
+    static long insertSanFranciscoLocationValues(Context context)
+    {
         TowerDbHelper dbHelper = new TowerDbHelper(context);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        ContentValues testValues = TestUtilities.createNorthPoleLocationValues();
+        ContentValues testValues = TestUtilities.createSanFranciscoLocationValues();
 
         long locationRowId;
         locationRowId = db.insert(TowerContract.DbLocation.TABLE_NAME, null, testValues);
-        assertTrue("Error: Failure to insert North Pole Location Values", locationRowId != -1);
+        assertTrue("Error: Failure to insert San Francisco Location Values", locationRowId != -1);
         db.close();
 
         return locationRowId;

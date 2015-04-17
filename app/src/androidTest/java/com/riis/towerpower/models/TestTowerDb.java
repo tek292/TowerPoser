@@ -1,19 +1,4 @@
-/*
- * Copyright (C) 2014 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-package com.riis.towerpower.data;
+package com.riis.towerpower.models;
 
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -23,10 +8,8 @@ import android.util.Log;
 
 import java.util.HashSet;
 
-public class TestDb extends AndroidTestCase
+public class TestTowerDb extends AndroidTestCase
 {
-    public static final String LOG_TAG = TestDb.class.getSimpleName();
-
     public void setUp()
     {
         deleteTheDatabase();
@@ -37,7 +20,7 @@ public class TestDb extends AndroidTestCase
         final HashSet<String> tableNameHashSet = new HashSet<>();
         tableNameHashSet.add(TowerContract.DbLocation.TABLE_NAME);
         tableNameHashSet.add(TowerContract.DbTower.TABLE_NAME);
-        tableNameHashSet.add(TowerContract.DbNetwork.TABLE_NAME);
+        tableNameHashSet.add(TowerContract.DbLocationTower.TABLE_NAME);
 
         mContext.deleteDatabase(TowerDbHelper.DATABASE_NAME);
         SQLiteDatabase db = new TowerDbHelper(this.mContext).getWritableDatabase();
@@ -51,29 +34,29 @@ public class TestDb extends AndroidTestCase
         {
             tableNameHashSet.remove(c.getString(0));
         }
-        assertTrue("Error: Your database was created without both the location entry and weather entry tables",
+        assertTrue("Error: Your database was created without necessary tables",
                 tableNameHashSet.isEmpty());
         c.close();
 
-        c = db.rawQuery("PRAGMA table_info(" + TowerContract.DbNetwork.TABLE_NAME + ")",
+        c = db.rawQuery("PRAGMA table_info(" + TowerContract.DbLocationTower.TABLE_NAME + ")",
                 null);
         assertTrue("Error: This means that we were unable to query the database for table information.",
                 c.moveToFirst());
 
         final HashSet<String> networkColumnHashSet = new HashSet<>();
-        networkColumnHashSet.add(TowerContract.DbNetwork._ID);
-        networkColumnHashSet.add(TowerContract.DbNetwork.COLUMN_NAME);
+        networkColumnHashSet.add(TowerContract.DbLocationTower._ID);
+        networkColumnHashSet.add(TowerContract.DbLocationTower.COLUMN_LOCATION_ID);
+        networkColumnHashSet.add(TowerContract.DbLocationTower.COLUMN_TOWER_ID);
 
         int columnNameIndex = c.getColumnIndex("name");
         do
         {
             String columnName = c.getString(columnNameIndex);
             networkColumnHashSet.remove(columnName);
-            Log.e(LOG_TAG, columnName);
         }
         while(c.moveToNext());
 
-        assertTrue("Error: The database doesn't contain all of the required network columns",
+        assertTrue("Error: The database doesn't contain all of the required tower_to_location columns",
                 networkColumnHashSet.isEmpty());
         c.close();
 
@@ -99,7 +82,6 @@ public class TestDb extends AndroidTestCase
         {
             String columnName = c.getString(columnNameIndex);
             towerColumnHashSet.remove(columnName);
-            Log.e(LOG_TAG, columnName);
         }
         while(c.moveToNext());
 
@@ -116,14 +98,12 @@ public class TestDb extends AndroidTestCase
         locationColumnHashSet.add(TowerContract.DbLocation._ID);
         locationColumnHashSet.add(TowerContract.DbLocation.COLUMN_LATITUDE);
         locationColumnHashSet.add(TowerContract.DbLocation.COLUMN_LONGITUDE);
-        locationColumnHashSet.add(TowerContract.DbLocation.COLUMN_TOWER_ID);
 
         columnNameIndex = c.getColumnIndex("name");
         do
         {
             String columnName = c.getString(columnNameIndex);
             locationColumnHashSet.remove(columnName);
-            Log.e(LOG_TAG, columnName);
         }
         while(c.moveToNext());
 
@@ -143,9 +123,9 @@ public class TestDb extends AndroidTestCase
         insertTower();
     }
 
-    public void testNetworkTable()
+    public void testLocationTowerTable()
     {
-        insertNetwork();
+        insertLocationToTower();
     }
 
     long insertLocation()
@@ -155,7 +135,7 @@ public class TestDb extends AndroidTestCase
 
         TowerDbHelper dbHelper = new TowerDbHelper(mContext);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        ContentValues testValues = TestUtilities.createNorthPoleLocationValues();
+        ContentValues testValues = TestUtilities.createSanFranciscoLocationValues();
 
         long locationRowId = db.insert(TowerContract.DbLocation.TABLE_NAME, null, testValues);
         assertTrue(locationRowId != -1);
@@ -176,12 +156,9 @@ public class TestDb extends AndroidTestCase
 
     long insertTower()
     {
-        long networkRowId = insertNetwork();
-        assertFalse("Error: Network Not Inserted Correctly", networkRowId == -1L);
-
         TowerDbHelper dbHelper = new TowerDbHelper(mContext);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        ContentValues towerValues = TestUtilities.createNorthPoleTowerValues(networkRowId);
+        ContentValues towerValues = TestUtilities.createSanFranciscoTowerValues();
 
         long towerRowId = db.insert(TowerContract.DbTower.TABLE_NAME, null, towerValues);
         assertTrue(towerRowId != -1);
@@ -201,21 +178,21 @@ public class TestDb extends AndroidTestCase
         return towerRowId;
     }
 
-    long insertNetwork()
+    long insertLocationToTower()
     {
         TowerDbHelper dbHelper = new TowerDbHelper(mContext);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        ContentValues testValues = TestUtilities.createNorthPoleNetworkValues();
+        ContentValues testValues = TestUtilities.createSanFranciscoTowerLocationValues();
 
-        long locationRowId = db.insert(TowerContract.DbNetwork.TABLE_NAME, null, testValues);
+        long locationRowId = db.insert(TowerContract.DbLocationTower.TABLE_NAME, null, testValues);
         assertTrue(locationRowId != -1);
 
-        Cursor cursor = db.query(TowerContract.DbNetwork.TABLE_NAME, null, null, null, null, null, null);
-        assertTrue( "Error: No Records returned from location query", cursor.moveToFirst() );
+        Cursor cursor = db.query(TowerContract.DbLocationTower.TABLE_NAME, null, null, null, null, null, null);
+        assertTrue( "Error: No Records returned from location_to_tower query", cursor.moveToFirst() );
 
-        TestUtilities.validateCurrentRecord("Error: Location Query Validation Failed",
+        TestUtilities.validateCurrentRecord("Error: Location To Tower Query Validation Failed",
                 cursor, testValues);
-        assertFalse( "Error: More than one record returned from location query",
+        assertFalse( "Error: More than one record returned from location_to_tower query",
                 cursor.moveToNext() );
 
         cursor.close();

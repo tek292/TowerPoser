@@ -147,16 +147,16 @@ public class CellTowerPagerAdapter extends FragmentPagerAdapter
             String distance = prefs.getString(mContext.getString(R.string.pref_distance_key),
                     mContext.getString(R.string.pref_distance_default));
 
-            TowerPowerRetriever retriever = new TowerPowerRetriever();
-            String response = retriever.send(latitude.toString(), longitude.toString(), distance);
-            try
-            {
-                mFullTowerList = retriever.getTowerPower(response);
-            }
-            catch (JSONException e)
-            {
-                e.printStackTrace();
-            }
+//            TowerPowerRetriever retriever = new TowerPowerRetriever();
+//            String response = retriever.send(latitude.toString(), longitude.toString(), distance);
+//            try
+//            {
+//                mFullTowerList = retriever.getTowerPower(response);
+//            }
+//            catch (JSONException e)
+//            {
+//                e.printStackTrace();
+//            }
 
 
             // Reference: http://stackoverflow.com/questions/4152373/how-to-know-location-area-code-and-cell-id-in-android-phone

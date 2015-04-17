@@ -8,6 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.riis.towerpower.R;
@@ -45,10 +46,9 @@ public class TowerPageFragment extends Fragment
 
     private void setUpViews(View rootView)
     {
-        RecyclerView towerList = (RecyclerView) rootView.findViewById(R.id.data_list);
-        final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
-        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        towerList.setAdapter(new TowerListAdapter(mTowerData, mNetworkType));
+        ListView towerList = (ListView) rootView.findViewById(R.id.tower_list);
+
+        towerList.setAdapter(new TowerListAdapter(getActivity(), null, mNetworkType));
 
         if(mTowerData.size() == 0)
         {

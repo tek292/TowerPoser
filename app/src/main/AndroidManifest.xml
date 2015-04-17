@@ -24,6 +24,6 @@
 
         <provider
             android:authorities="com.riis.towerpower"
-            android:name=".data.TowerProvider"/>
+            android:name=".models.TowerProvider"/>
     </application>
 </manifest>

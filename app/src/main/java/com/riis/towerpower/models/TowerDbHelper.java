@@ -1,4 +1,4 @@
-package com.riis.towerpower.data;
+package com.riis.towerpower.models;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -17,17 +17,17 @@ public class TowerDbHelper extends SQLiteOpenHelper
     @Override
     public void onCreate(SQLiteDatabase db)
     {
-        db.execSQL(TowerContract.DbNetwork.createTable());
         db.execSQL(TowerContract.DbTower.createTable());
         db.execSQL(TowerContract.DbLocation.createTable());
+        db.execSQL(TowerContract.DbLocationTower.createTable());
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)
     {
+        db.execSQL("DROP TABLE IF EXISTS " + TowerContract.DbLocationTower.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + TowerContract.DbTower.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + TowerContract.DbLocation.TABLE_NAME);
-        db.execSQL("DROP TABLE IF EXISTS " + TowerContract.DbNetwork.TABLE_NAME);
         onCreate(db);
     }
 }
