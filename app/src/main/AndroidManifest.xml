@@ -21,5 +21,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.activity.SettingsActivity"/>
+
+        <provider
+            android:authorities="com.riis.towerpower"
+            android:name=".data.TowerProvider"/>
     </application>
 </manifest>
