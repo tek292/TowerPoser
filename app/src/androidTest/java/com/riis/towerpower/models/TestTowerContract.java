@@ -31,13 +31,15 @@ public class TestTowerContract extends AndroidTestCase
 
     public void testBuildTowerLocation()
     {
-        Uri towerLocationUri = TowerContract.DbLocationTower.buildLocationToTower(1, 1);
+        Uri towerLocationUri = TowerContract.DbLocationTower
+                .buildLocationToTowerWithCoordinates(coordinates[0], coordinates[1]);
         assertNotNull("Error: Null Uri returned.", towerLocationUri);
         assertEquals("Error: Location Latitude not properly appended to the Uri",
-                "1", towerLocationUri.getPathSegments().get(1));
+                "64.7488", towerLocationUri.getPathSegments().get(1));
         assertEquals("Error: Location Longitude not properly appended to the end of the Uri",
-                "1", towerLocationUri.getLastPathSegment());
-        assertEquals("Error: Location Uri doesn't match our expected result",
-                towerLocationUri.toString(), "content://com.riis.towerpower/location_to_tower/1/1");
+                "-147.353", towerLocationUri.getLastPathSegment());
+        assertEquals("Error: Location to Tower Uri doesn't match our expected result",
+                towerLocationUri.toString(),
+                "content://com.riis.towerpower/location_to_tower/64.7488/-147.353");
     }
 }

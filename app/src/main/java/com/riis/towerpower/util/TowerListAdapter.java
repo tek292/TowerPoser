@@ -9,46 +9,27 @@ import android.widget.CursorAdapter;
 import android.widget.TextView;
 
 import com.riis.towerpower.R;
-import com.riis.towerpower.models.Tower;
-import com.riis.towerpower.models.eNetworkType;
-
-import java.util.ArrayList;
+import com.riis.towerpower.models.TowerContract;
 
 /**
  * @author tkocikjr
  */
 public class TowerListAdapter extends CursorAdapter
 {
-    private ArrayList<Tower> mTowerList;
-    private eNetworkType mNetworkType;
-
-    public TowerListAdapter(Context context, Cursor cursor, eNetworkType type)
+    public TowerListAdapter(Context context, Cursor cursor)
     {
-        super(context, cursor, false);
-        mNetworkType = type;
+        super(context, cursor, 0);
     }
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent)
     {
-        if(mNetworkType == eNetworkType.OTHER)
-        {
-            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_other_network, parent, false);
-            TowerListViewHolder viewHolder = new TowerListViewHolder();
-            viewHolder.networkName = (TextView) v.findViewById(R.id.network_name_text_view);
-            viewHolder.reliability = (TextView) v.findViewById(R.id.reliability_text_view);
-            v.setTag(viewHolder);
-            return v;
-        }
-        else
-        {
-            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_main_network, parent, false);
-            TowerListViewHolder viewHolder = new TowerListViewHolder();
-            viewHolder.networkName = null;
-            viewHolder.reliability = (TextView) v.findViewById(R.id.reliability_text_view);
-            v.setTag(viewHolder);
-            return v;
-        }
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_other_network, parent, false);
+        TowerListViewHolder viewHolder = new TowerListViewHolder();
+        viewHolder.networkName = (TextView) v.findViewById(R.id.network_name_text_view);
+        viewHolder.reliability = (TextView) v.findViewById(R.id.reliability_text_view);
+        v.setTag(viewHolder);
+        return v;
     }
 
     @Override
@@ -56,12 +37,10 @@ public class TowerListAdapter extends CursorAdapter
     {
         TowerListViewHolder viewHolder = (TowerListViewHolder) view.getTag();
 
-//        if(mNetworkType == eNetworkType.OTHER)
-//        {
-//            viewHolder.networkName.setText(mTowerList.get(position).getNetworkName());
-//        }
-//
-//        viewHolder.reliability.setText(Double.toString(mTowerList.get(position).getReliability()));
+        viewHolder.networkName.setText(cursor.getString(
+                cursor.getColumnIndex(TowerContract.DbTower.COLUMN_NAME)));
+
+        viewHolder.reliability.setText(cursor.getString(cursor.getColumnIndex(TowerContract.DbTower.COLUMN_RELIABILITY)));
     }
 
     private static class TowerListViewHolder

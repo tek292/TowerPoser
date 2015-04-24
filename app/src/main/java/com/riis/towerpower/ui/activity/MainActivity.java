@@ -1,40 +1,62 @@
 package com.riis.towerpower.ui.activity;
 
-import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.riis.towerpower.R;
-import com.riis.towerpower.models.Tower;
-import com.riis.towerpower.util.CellTowerPagerAdapter;
-import com.riis.towerpower.util.GPSTrackerService;
-import com.riis.towerpower.util.TowerPowerRetriever;
-
-import org.json.JSONException;
-
-import java.util.ArrayList;
+import com.riis.towerpower.models.Consts;
+import com.riis.towerpower.ui.fragment.TowerPageFragment;
+import com.riis.towerpower.util.sync.TowerSyncAdapter;
 
 /**
  * @author tkocikjr
  */
 public class MainActivity extends ActionBarActivity
 {
+    private Double mLatitude;
+    private Double mLongitude;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        setUpViews();
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.tower_list_fragment, new TowerPageFragment())
+                    .commit();
+        }
+
+        TowerSyncAdapter.initializeSyncAdapter(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        Double latitude = Double.parseDouble(prefs.getString(Consts.getLatitude(), "37.7907"));
+        Double longitude = Double.parseDouble(prefs.getString(Consts.getLongitude(), "-122.4058"));
+
+        // update the location in our second pane using the fragment manager
+        if (!latitude.equals(mLatitude) || !longitude.equals(mLongitude)) {
+            TowerPageFragment ff = (TowerPageFragment)getSupportFragmentManager()
+                    .findFragmentById(R.id.tower_list_fragment);
+            if ( null != ff ) {
+                ff.onLocationChanged();
+            }
+//            DetailFragment df = (DetailFragment)getSupportFragmentManager().findFragmentByTag(DETAILFRAGMENT_TAG);
+//            if ( null != df ) {
+//                df.onLocationChanged(location);
+//            }
+            mLatitude = latitude;
+            mLongitude = longitude;
+        }
     }
 
     @Override
@@ -56,11 +78,5 @@ public class MainActivity extends ActionBarActivity
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    private void setUpViews()
-    {
-        ViewPager cellTowerViewPager = (ViewPager) findViewById(R.id.cell_tower_pager);
-        cellTowerViewPager.setAdapter(new CellTowerPagerAdapter(this, getSupportFragmentManager()));
     }
 }

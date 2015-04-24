@@ -1,5 +1,6 @@
 package com.riis.towerpower.util;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Service;
 import android.content.Context;
@@ -11,7 +12,6 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.Settings;
-import android.util.Log;
 
 import com.riis.towerpower.R;
 
@@ -26,16 +26,15 @@ public class GPSTrackerService extends Service implements LocationListener
     private static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 1; // 1 minute
 
     private boolean mCanGetLocation = false;
-    private Context mContext;
+    private Activity mContext;
     private double mLatitude;
     private double mLongitude;
     private Location mLocation;
     private LocationManager mLocationManager;
 
-    public GPSTrackerService(Context context)
+    public GPSTrackerService(Activity context)
     {
         mContext = context;
-        getLocation();
     }
 
     @Override
@@ -64,7 +63,7 @@ public class GPSTrackerService extends Service implements LocationListener
     {
     }
 
-    public Location getLocation() {
+    public void getLocation() {
         try {
             mLocationManager = (LocationManager) mContext.getSystemService(LOCATION_SERVICE);
             boolean isGPSEnabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
@@ -82,13 +81,14 @@ public class GPSTrackerService extends Service implements LocationListener
                 {
                     mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
                             MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
-                    Log.d("Network", "Network");
                     if (mLocationManager != null)
                     {
                         mLocation = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
                         if (mLocation != null) {
                             mLatitude = mLocation.getLatitude();
                             mLongitude = mLocation.getLongitude();
+
+                            new TowerPowerRetriever(mContext).addLocation(mLatitude, mLongitude);
                         }
                     }
                 }
@@ -100,13 +100,14 @@ public class GPSTrackerService extends Service implements LocationListener
                     {
                         mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
                                 MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
-                        Log.d("GPS Enabled", "GPS Enabled");
                         if (mLocationManager != null)
                         {
                             mLocation = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                             if (mLocation != null) {
                                 mLatitude = mLocation.getLatitude();
                                 mLongitude = mLocation.getLongitude();
+
+                                new TowerPowerRetriever(mContext).addLocation(mLatitude, mLongitude);
                             }
                         }
                     }
@@ -116,36 +117,6 @@ public class GPSTrackerService extends Service implements LocationListener
         {
             e.printStackTrace();
         }
-
-        return mLocation;
-    }
-
-    /**
-     * Function to get latitude
-     * @return double
-     */
-    public double getLatitude()
-    {
-        if(mLocation != null)
-        {
-            mLatitude = mLocation.getLatitude();
-        }
-
-        return mLatitude;
-    }
-
-    /**
-     * Function to get longitude
-     * @return double
-     */
-    public double getLongitude()
-    {
-        if(mLocation != null)
-        {
-            mLongitude = mLocation.getLongitude();
-        }
-
-        return mLongitude;
     }
 
     /**

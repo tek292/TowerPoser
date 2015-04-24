@@ -8,6 +8,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+import android.util.Log;
 
 public class TowerProvider extends ContentProvider
 {
@@ -19,7 +20,7 @@ public class TowerProvider extends ContentProvider
     public static final int TOWER_WITH_ID = 201;
     public static final int LOCATION_TO_TOWER = 300;
     public static final int LOCATION_TO_TOWER_WITH_ID = 301;
-    public static final int LOCATION_TO_TOWER_WITH_IDS = 302;
+    public static final int LOCATION_TO_TOWER_WITH_COORDINATES = 302;
 
     private TowerDbHelper mTowerDbHelper;
 
@@ -36,7 +37,7 @@ public class TowerProvider extends ContentProvider
                 + TowerContract.DbLocationTower.TABLE_NAME + "." + TowerContract.DbLocationTower.COLUMN_TOWER_ID
                 + " = "
                 + TowerContract.DbTower.TABLE_NAME + "." + TowerContract.DbTower._ID + " "
-                + TowerContract.DbLocation.TABLE_NAME + " INNER JOIN " + TowerContract.DbLocationTower.TABLE_NAME
+                + " INNER JOIN " + TowerContract.DbLocation.TABLE_NAME
                 + " ON "
                 + TowerContract.DbLocation.TABLE_NAME + "." + TowerContract.DbLocation._ID
                 + " = "
@@ -73,7 +74,7 @@ public class TowerProvider extends ContentProvider
             case LOCATION_TO_TOWER_WITH_ID:
                 retCursor = getLocationToTowerById(uri, projection, sortOrder);
                 break;
-            case LOCATION_TO_TOWER_WITH_IDS:
+            case LOCATION_TO_TOWER_WITH_COORDINATES:
                 retCursor = getLocationToTowerByCoordinates(uri, projection, sortOrder);
                 break;
             default:
@@ -101,8 +102,9 @@ public class TowerProvider extends ContentProvider
             case LOCATION_TO_TOWER:
                 return TowerContract.DbLocationTower.CONTENT_TYPE;
             case LOCATION_TO_TOWER_WITH_ID:
-            case LOCATION_TO_TOWER_WITH_IDS:
                 return TowerContract.DbLocationTower.CONTENT_ITEM_TYPE;
+            case LOCATION_TO_TOWER_WITH_COORDINATES:
+                return TowerContract.DbLocationTower.CONTENT_TYPE;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -120,13 +122,32 @@ public class TowerProvider extends ContentProvider
         {
             case LOCATION:
                 id = db.insert(TowerContract.DbLocation.TABLE_NAME, null, values);
+                Log.wtf("Did it insert?", Long.toString(id));
                 if(id > 0)
                 {
                     returnUri = TowerContract.DbLocation.buildLocationUri(id);
                 }
                 else
                 {
-                    throw new SQLException("Failed to insert row into " + uri);
+                    Uri thisUri = TowerContract.DbLocation.buildLocationUri(
+                            Double.parseDouble(values.getAsString(TowerContract.DbLocation.COLUMN_LATITUDE)),
+                            Double.parseDouble(values.getAsString(TowerContract.DbLocation.COLUMN_LONGITUDE)));
+
+                    String selection =
+                            TowerContract.DbLocation.TABLE_NAME + "."
+                                    + TowerContract.DbLocation.COLUMN_LATITUDE + " = ?"
+                                    + " AND " + TowerContract.DbLocation.TABLE_NAME + "."
+                                    + TowerContract.DbLocation.COLUMN_LONGITUDE + " = ?";
+
+                    String[] selectionArgs = {values.getAsString(TowerContract.DbLocation.COLUMN_LATITUDE),
+                            values.getAsString(TowerContract.DbLocation.COLUMN_LONGITUDE)};
+
+                    Cursor cursor = query(uri, new String[] {TowerContract.DbLocation._ID},
+                            selection, selectionArgs, null);
+                    cursor.moveToFirst();
+                    id = cursor.getLong(0);
+                    cursor.close();
+                    returnUri = TowerContract.DbLocation.buildLocationUri(id);
                 }
                 break;
             case TOWER:
@@ -237,7 +258,7 @@ public class TowerProvider extends ContentProvider
 
         matcher.addURI(authority, TowerContract.PATH_LOCATION_TO_TOWER, LOCATION_TO_TOWER);
         matcher.addURI(authority, TowerContract.PATH_LOCATION_TO_TOWER + "/*", LOCATION_TO_TOWER_WITH_ID);
-        matcher.addURI(authority, TowerContract.PATH_LOCATION_TO_TOWER + "/*/*", LOCATION_TO_TOWER_WITH_IDS);
+        matcher.addURI(authority, TowerContract.PATH_LOCATION_TO_TOWER + "/*/*", LOCATION_TO_TOWER_WITH_COORDINATES);
 
         return matcher;
     }
@@ -251,7 +272,7 @@ public class TowerProvider extends ContentProvider
                         + TowerContract.DbLocation.COLUMN_LONGITUDE + " = ?";
         String[] coordinates = TowerContract.DbLocation.getLatitudeLongitudeFromUri(uri);
 
-        return mLocationQueryBuilder.query(mTowerDbHelper.getReadableDatabase(),
+        return mTowerDbHelper.getReadableDatabase().query(TowerContract.DbLocation.TABLE_NAME,
                 projection, selection, coordinates, null, null, sortOrder);
     }
 
@@ -275,13 +296,13 @@ public class TowerProvider extends ContentProvider
     private Cursor getLocationToTowerByCoordinates(Uri uri, String[] projection, String sortOrder)
     {
         String selection =
-                TowerContract.DbLocationTower.TABLE_NAME + "."
-                        + TowerContract.DbLocationTower.COLUMN_LOCATION_ID + " = ? "
-                        + "AND " + TowerContract.DbLocationTower.TABLE_NAME + "."
-                        + TowerContract.DbLocationTower.COLUMN_TOWER_ID + " = ?";
-        String[] ids = TowerContract.DbLocationTower.getLocationToTowerFromUri(uri);
+                TowerContract.DbLocation.TABLE_NAME + "."
+                        + TowerContract.DbLocation.COLUMN_LATITUDE + " = ?"
+                        + " AND " + TowerContract.DbLocation.TABLE_NAME + "."
+                        + TowerContract.DbLocation.COLUMN_LONGITUDE + " = ?";
+        String[] coordinates = TowerContract.DbLocation.getLatitudeLongitudeFromUri(uri);
 
-        return mTowerDbHelper.getReadableDatabase().query(TowerContract.DbTower.TABLE_NAME,
-            projection, selection, ids, null, null, sortOrder);
+        return mLocationQueryBuilder.query(mTowerDbHelper.getReadableDatabase(), projection, selection,
+                coordinates, null, null, sortOrder);
     }
 }

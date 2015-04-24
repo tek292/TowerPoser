@@ -73,14 +73,15 @@ public class TestTowerProvider extends AndroidTestCase
                 TowerContract.DbLocationTower.CONTENT_TYPE, type);
 
         type = mContext.getContentResolver().getType(TowerContract.DbLocationTower.buildLocationToTower(1));
-        assertEquals("Error: the DbLocationTower CONTENT_URI with location and date should return"
+        assertEquals("Error: the DbLocationTower CONTENT_URI with id should return"
                         + " DbLocationTower.CONTENT_ITEM_TYPE",
                 TowerContract.DbLocationTower.CONTENT_ITEM_TYPE, type);
 
-        type = mContext.getContentResolver().getType(TowerContract.DbLocationTower.buildLocationToTower(1, 1));
-        assertEquals("Error: the DbLocationTower CONTENT_URI with location and date should return"
+        type = mContext.getContentResolver().getType(TowerContract.DbLocationTower
+                .buildLocationToTowerWithCoordinates(testCoordinates[0], testCoordinates[1]));
+        assertEquals("Error: the DbLocationTower CONTENT_URI with lat/long coords should return"
                         + " DbLocationTower.CONTENT_ITEM_TYPE",
-                TowerContract.DbLocationTower.CONTENT_ITEM_TYPE, type);
+                TowerContract.DbLocationTower.CONTENT_TYPE, type);
     }
 
     public void testBasicLocationQuery()

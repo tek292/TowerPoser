@@ -120,10 +120,10 @@ public class TowerContract
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
 
-        public static Uri buildLocationToTower(long towerId, long locationid)
+        public static Uri buildLocationToTowerWithCoordinates(double latitude, double longitude)
         {
-            return CONTENT_URI.buildUpon().appendPath(Long.toString(locationid))
-                    .appendPath(Long.toString(towerId)).build();
+            return CONTENT_URI.buildUpon().appendPath(Double.toString(latitude))
+                    .appendPath(Double.toString(longitude)).build();
         }
 
         public static String getIdFromUri(Uri uri)
@@ -133,10 +133,10 @@ public class TowerContract
 
         public static String[] getLocationToTowerFromUri(Uri uri)
         {
-            String[] ids = new String[2];
-            ids[0] = uri.getPathSegments().get(1);
-            ids[1] = uri.getPathSegments().get(2);
-            return ids;
+            String[] coordinates = new String[2];
+            coordinates[0] = uri.getPathSegments().get(1);
+            coordinates[1] = uri.getPathSegments().get(2);
+            return coordinates;
         }
 
         protected static String createTable()
