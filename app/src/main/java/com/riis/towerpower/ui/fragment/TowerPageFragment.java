@@ -31,9 +31,17 @@ public class TowerPageFragment extends Fragment implements LoaderManager.LoaderC
 {
     private static final int TOWER_LOADER = 0;
 
+    private static final String[] TOWER_COLUMNS = {
+            TowerContract.DbTower.TABLE_NAME + "." + TowerContract.DbLocationTower._ID,
+//            TowerContract.DbLocation.COLUMN_LATITUDE,
+//            TowerContract.DbLocation.COLUMN_LONGITUDE,
+            TowerContract.DbTower.COLUMN_NAME
+    };
+
     private ListView mTowerList;
     private TextView mNoDataTextView;
     private TowerListAdapter mTowerListAdapter;
+    private Uri mUri;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
@@ -58,19 +66,33 @@ public class TowerPageFragment extends Fragment implements LoaderManager.LoaderC
     {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
-        Uri uri = TowerContract.DbLocationTower.buildLocationToTowerWithCoordinates(
+        mUri = TowerContract.DbLocationTower.buildLocationToTowerWithCoordinates(
                 Double.parseDouble(prefs.getString(Consts.getLatitude(), "37.7907")),
                 Double.parseDouble(prefs.getString(Consts.getLongitude(), "-122.4058")));
 
         String sortOrder = TowerContract.DbTower.COLUMN_NETWORK_TYPE + " ASC";
 
-        return new CursorLoader(getActivity(), uri, null, null, null, sortOrder);
+        return new CursorLoader(getActivity(), mUri, TOWER_COLUMNS, null, null, sortOrder);
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data)
     {
-        mTowerListAdapter.swapCursor(data);
+        String[] coordinates = TowerContract.DbLocationTower.getLocationToTowerFromUri(mUri);
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        Double latitude = Double.parseDouble(prefs.getString(Consts.getLatitude(), "37.7907"));
+        Double longitude = Double.parseDouble(prefs.getString(Consts.getLongitude(), "-122.4058"));
+
+        if(Double.parseDouble(coordinates[0]) != latitude || Double.parseDouble(coordinates[1]) != longitude)
+        {
+            getLoaderManager().restartLoader(TOWER_LOADER, null, this);
+        }
+        else
+        {
+            mTowerListAdapter.swapCursor(data);
+        }
+
         refreshListLayout();
     }
 
@@ -107,8 +129,8 @@ public class TowerPageFragment extends Fragment implements LoaderManager.LoaderC
         }
         else
         {
-            mTowerList.setVisibility(View.GONE);
-            mNoDataTextView.findViewById(R.id.no_data_textview).setVisibility(View.VISIBLE);
+            mTowerList.setVisibility(View.VISIBLE);
+            mNoDataTextView.findViewById(R.id.no_data_textview).setVisibility(View.GONE);
         }
     }
 }

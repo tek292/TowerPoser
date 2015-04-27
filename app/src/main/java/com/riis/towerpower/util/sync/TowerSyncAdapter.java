@@ -2,12 +2,15 @@ package com.riis.towerpower.util.sync;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SyncRequest;
@@ -20,11 +23,10 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Looper;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
-import android.util.Log;
 
 import com.riis.towerpower.R;
 import com.riis.towerpower.models.Consts;
@@ -75,27 +77,15 @@ public class TowerSyncAdapter extends AbstractThreadedSyncAdapter implements Loc
         String distance = prefs.getString(mContext.getString(R.string.pref_distance_key),
                 mContext.getString(R.string.pref_distance_default));
 
-        Double latitude = Double.parseDouble(prefs.getString(Consts.getLatitude(), "37.7907"));
-        Double longitude = Double.parseDouble(prefs.getString(Consts.getLongitude(), "-122.4058"));
-
-        Uri uri = TowerContract.DbLocation.buildLocationUri(latitude, longitude);
+        Uri uri = TowerContract.DbLocation.buildLocationUri(mLatitude, mLongitude);
 
         Cursor cursor = mContext.getContentResolver().query(uri,
                 null, null, null, null);
 
-//        if(cursor.getCount() == 0)
-//        {
-//            cursor.close();
-//            Looper.prepare();
-//            onLocationChanged(null);
-//            Looper.loop();
-//            return;
-//        }
-
         cursor.moveToFirst();
 
         TowerPowerRetriever retriever = new TowerPowerRetriever(mContext);
-        String response = retriever.send(latitude.toString(), longitude.toString(), distance);
+        String response = retriever.send(mLatitude.toString(), mLongitude.toString(), distance);
         try
         {
             retriever.getTowerPower(response, cursor.getLong(0));
@@ -140,6 +130,12 @@ public class TowerSyncAdapter extends AbstractThreadedSyncAdapter implements Loc
                         mLongitude = mLocation.getLongitude();
 
                         new TowerPowerRetriever(mContext).addLocation(mLatitude, mLongitude);
+
+                        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
+                        SharedPreferences.Editor editor = prefs.edit();
+                        editor.putString(Consts.getLatitude(), Double.toString(mLatitude));
+                        editor.putString(Consts.getLongitude(), Double.toString(mLongitude));
+                        editor.apply();
                     }
                 }
 
@@ -154,6 +150,12 @@ public class TowerSyncAdapter extends AbstractThreadedSyncAdapter implements Loc
                             mLongitude = mLocation.getLongitude();
 
                             new TowerPowerRetriever(mContext).addLocation(mLatitude, mLongitude);
+
+                            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
+                            SharedPreferences.Editor editor = prefs.edit();
+                            editor.putString(Consts.getLatitude(), Double.toString(mLatitude));
+                            editor.putString(Consts.getLongitude(), Double.toString(mLongitude));
+                            editor.apply();
                         }
                     }
                 }
@@ -258,7 +260,7 @@ public class TowerSyncAdapter extends AbstractThreadedSyncAdapter implements Loc
         return newAccount;
     }
 
-    public static void initializeSyncAdapter(Context context)
+    public static void initializeSyncAdapter(Activity context)
     {
         getSyncAccount(context);
     }
@@ -295,8 +297,8 @@ public class TowerSyncAdapter extends AbstractThreadedSyncAdapter implements Loc
             String lastNotificationKey = context.getString(R.string.pref_last_notification);
             long lastSync = prefs.getLong(lastNotificationKey, 0);
 
-//            if (System.currentTimeMillis() - lastSync >= DAY_IN_MILLIS)
-//            {
+            if (System.currentTimeMillis() - lastSync >= DAY_IN_MILLIS)
+            {
                 Uri uri = TowerContract.DbLocation.buildLocationUri(
                         Double.parseDouble(prefs.getString(Consts.getLatitude(), "37.7907")),
                         Double.parseDouble(prefs.getString(Consts.getLongitude(), "-122.4058")));
@@ -352,9 +354,47 @@ public class TowerSyncAdapter extends AbstractThreadedSyncAdapter implements Loc
                     SharedPreferences.Editor editor = prefs.edit();
                     editor.putLong(lastNotificationKey, System.currentTimeMillis());
                     editor.apply();
-//                }
+                }
                 cursor.close();
             }
+        }
+    }
+
+    /**
+     * Function to show settings alert dialog
+     */
+    private void showSettingsAlert()
+    {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(mContext);
+
+        alertDialog.setTitle(mContext.getString(R.string.gps_not_enabled_title));
+        alertDialog.setMessage(mContext.getString(R.string.gps_not_enabled_message));
+
+        alertDialog.setPositiveButton(mContext.getString(R.string.action_settings),
+                new DialogInterface.OnClickListener()
+                {
+                    public void onClick(DialogInterface dialog,int which)
+                    {
+                        Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                        mContext.startActivity(intent);
+                    }
+                });
+
+        alertDialog.setNegativeButton(mContext.getString(android.R.string.cancel), null);
+
+        alertDialog.show();
+    }
+
+
+    //TODO Organize this class
+    /**
+     * Stop using GPS listener
+     * Calling this function will stop using GPS in your app
+     */
+    public void stopUsingGPS()
+    {
+        if(mLocationManager != null){
+            mLocationManager.removeUpdates(this);
         }
     }
 }

@@ -3,10 +3,8 @@ package com.riis.towerpower.util;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
-import android.preference.PreferenceManager;
 
 import com.riis.towerpower.models.Consts;
 import com.riis.towerpower.models.TowerContract;
@@ -173,12 +171,6 @@ public class TowerPowerRetriever
         }
 
         locationCursor.close();
-
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putString(Consts.getLatitude(), Double.toString(latitude));
-        editor.putString(Consts.getLongitude(), Double.toString(longitude));
-        editor.apply();
 
         return locationId;
     }

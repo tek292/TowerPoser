@@ -8,7 +8,6 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
-import android.util.Log;
 
 public class TowerProvider extends ContentProvider
 {
@@ -122,17 +121,12 @@ public class TowerProvider extends ContentProvider
         {
             case LOCATION:
                 id = db.insert(TowerContract.DbLocation.TABLE_NAME, null, values);
-                Log.wtf("Did it insert?", Long.toString(id));
                 if(id > 0)
                 {
                     returnUri = TowerContract.DbLocation.buildLocationUri(id);
                 }
                 else
                 {
-                    Uri thisUri = TowerContract.DbLocation.buildLocationUri(
-                            Double.parseDouble(values.getAsString(TowerContract.DbLocation.COLUMN_LATITUDE)),
-                            Double.parseDouble(values.getAsString(TowerContract.DbLocation.COLUMN_LONGITUDE)));
-
                     String selection =
                             TowerContract.DbLocation.TABLE_NAME + "."
                                     + TowerContract.DbLocation.COLUMN_LATITUDE + " = ?"
@@ -297,10 +291,10 @@ public class TowerProvider extends ContentProvider
     {
         String selection =
                 TowerContract.DbLocation.TABLE_NAME + "."
-                        + TowerContract.DbLocation.COLUMN_LATITUDE + " = ?"
+                        + TowerContract.DbLocation.COLUMN_LATITUDE + "=?"
                         + " AND " + TowerContract.DbLocation.TABLE_NAME + "."
-                        + TowerContract.DbLocation.COLUMN_LONGITUDE + " = ?";
-        String[] coordinates = TowerContract.DbLocation.getLatitudeLongitudeFromUri(uri);
+                        + TowerContract.DbLocation.COLUMN_LONGITUDE + "=?";
+        String[] coordinates = TowerContract.DbLocationTower.getLocationToTowerFromUri(uri);
 
         return mLocationQueryBuilder.query(mTowerDbHelper.getReadableDatabase(), projection, selection,
                 coordinates, null, null, sortOrder);

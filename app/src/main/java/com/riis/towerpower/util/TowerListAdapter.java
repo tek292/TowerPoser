@@ -40,7 +40,7 @@ public class TowerListAdapter extends CursorAdapter
         viewHolder.networkName.setText(cursor.getString(
                 cursor.getColumnIndex(TowerContract.DbTower.COLUMN_NAME)));
 
-        viewHolder.reliability.setText(cursor.getString(cursor.getColumnIndex(TowerContract.DbTower.COLUMN_RELIABILITY)));
+//        viewHolder.reliability.setText(cursor.getString(cursor.getColumnIndex(TowerContract.DbTower.COLUMN_RELIABILITY)));
     }
 
     private static class TowerListViewHolder
