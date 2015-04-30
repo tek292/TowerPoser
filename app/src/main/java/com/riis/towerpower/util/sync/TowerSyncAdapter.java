@@ -74,8 +74,16 @@ public class TowerSyncAdapter extends AbstractThreadedSyncAdapter implements Loc
         }
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
+        String units = prefs.getString(mContext.getString(R.string.pref_units_key),
+                mContext.getString(R.string.pref_units_kilometer));
+
         String distance = prefs.getString(mContext.getString(R.string.pref_distance_key),
                 mContext.getString(R.string.pref_distance_default));
+
+        if(units.equals(mContext.getString(R.string.pref_units_mile)))
+        {
+            distance = Double.toString(Consts.convertMilesToKilometers(Double.parseDouble(distance)));
+        }
 
         Uri uri = TowerContract.DbLocation.buildLocationUri(mLatitude, mLongitude);
 
@@ -94,6 +102,8 @@ public class TowerSyncAdapter extends AbstractThreadedSyncAdapter implements Loc
         {
             e.printStackTrace();
         }
+
+        retriever.deleteOldTowers();
 
         cursor.close();
         notifyTower();
@@ -387,14 +397,4 @@ public class TowerSyncAdapter extends AbstractThreadedSyncAdapter implements Loc
 
 
     //TODO Organize this class
-    /**
-     * Stop using GPS listener
-     * Calling this function will stop using GPS in your app
-     */
-    public void stopUsingGPS()
-    {
-        if(mLocationManager != null){
-            mLocationManager.removeUpdates(this);
-        }
-    }
 }

@@ -1,5 +1,6 @@
 package com.riis.towerpower.ui.activity;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
 import android.preference.ListPreference;
@@ -39,16 +40,29 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
             public void afterTextChanged(Editable s) {
                 if(!s.toString().isEmpty()) {
                     Double doubleValue = Double.parseDouble(s.toString());
-                    Double kilometerValue = Consts.convertMilesToKilometers(doubleValue);
-
-                    if(kilometerValue > 16.0934)
+                    if(mListPreference.getEntry().toString().equals(getString(R.string.pref_units_label_kilometer)))
                     {
-                        mEditTextPreference.getEditText().setError(getString(R.string.pref_distance_error));
+                        if(doubleValue > 10)
+                        {
+                            mEditTextPreference.getEditText().setError(getString(R.string.pref_distance_km_error));
+                        }
+                        else
+                        {
+                            mEditTextPreference.getEditText().setError(null);
+                        }
                     }
                     else
                     {
-                        mEditTextPreference.getEditText().setError(null);
+                        if(doubleValue > 6)
+                        {
+                            mEditTextPreference.getEditText().setError(getString(R.string.pref_distance_mi_error));
+                        }
+                        else
+                        {
+                            mEditTextPreference.getEditText().setError(null);
+                        }
                     }
+
                 } else {
                     mEditTextPreference.getEditText().setError(null);
                 }
@@ -72,40 +86,60 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
             }
             else
             {
-                int distanceValue;
+                double distanceValue;
                 if(stringValue.isEmpty()) {
-                    distanceValue = Integer.parseInt(getString(R.string.pref_distance_default));
+                    distanceValue = Double.parseDouble(getString(R.string.pref_distance_default));
                 } else {
-                    distanceValue = Integer.parseInt(stringValue);
+                    distanceValue = Double.parseDouble(stringValue);
                 }
 
-                String unit = mListPreference.getEntry().toString();
+                String currentUnit = mListPreference.getEntry().toString();
 
-                if(unit.equals(getString(R.string.pref_units_metric)))
+                if(currentUnit.equals(getString(R.string.pref_units_label_mile)))
                 {
-                    preference.setSummary(getString(R.string.pref_distance_km, Integer.toString(distanceValue)));
+                    preference.setSummary(getString(R.string.pref_distance_mi, distanceValue));
                 }
                 else
                 {
-                    preference.setSummary(getString(R.string.pref_distance_mi, Integer.toString(distanceValue)));
+                    preference.setSummary(getString(R.string.pref_distance_km, distanceValue));
                 }
             }
         }
         else if (preference instanceof ListPreference)
         {
-            ListPreference listPreference = (ListPreference) preference;
-            int prefIndex = listPreference.findIndexOfValue(stringValue);
-            if (prefIndex >= 0) {
-                preference.setSummary(listPreference.getEntries()[prefIndex]);
+            int prefIndex = mListPreference.findIndexOfValue(stringValue);
+            if (prefIndex >= 0)
+            {
+                String currentUnit = mListPreference.getEntry().toString();
+                String newUnit = mListPreference.getEntries()[prefIndex].toString();
+                mListPreference.setSummary(newUnit);
 
-                String distanceValue = mEditTextPreference.getText();
-                if(listPreference.getEntryValues()[prefIndex].equals(getString(R.string.pref_units_metric)))
+                if(!currentUnit.equals(newUnit))
                 {
-                    mEditTextPreference.setSummary(getString(R.string.pref_distance_km, distanceValue));
-                }
-                else
-                {
-                    mEditTextPreference.setSummary(getString(R.string.pref_distance_mi, distanceValue));
+                    SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+                    String distanceValue = preferences.getString(getString(R.string.pref_distance_key),
+                            getString(R.string.pref_distance_default));
+
+                    SharedPreferences.Editor editor = preferences.edit();
+
+                    if(newUnit.equals(getString(R.string.pref_units_label_mile)))
+                    {
+                        String newDistance = Double.toString(
+                                Consts.convertKilometersToMiles(Double.parseDouble(distanceValue)));
+                        editor.putString(getString(R.string.pref_distance_key), newDistance);
+                        mEditTextPreference.setText(newDistance);
+                        mEditTextPreference.setSummary(getString(R.string.pref_distance_mi, newDistance));
+                    }
+                    else
+                    {
+                        String newDistance = Double.toString(
+                                Consts.convertMilesToKilometers(Double.parseDouble(distanceValue)));
+                        editor.putString(getString(R.string.pref_distance_key), newDistance);
+                        mEditTextPreference.setText(newDistance);
+                        mEditTextPreference.setSummary(getString(R.string.pref_distance_km, newDistance));
+                    }
+
+                    editor.apply();
                 }
             }
         }

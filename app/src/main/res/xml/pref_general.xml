@@ -4,13 +4,13 @@
         android:key="@string/pref_distance_key"
         android:title="@string/pref_distance_title"
         android:defaultValue="@string/pref_distance_default"
-        android:inputType="number"
+        android:inputType="numberDecimal"
         android:singleLine="true"/>
 
     <ListPreference
         android:key="@string/pref_units_key"
         android:title="@string/pref_units_label"
-        android:defaultValue="@string/pref_units_metric"
+        android:defaultValue="@string/pref_units_kilometer"
         android:entryValues="@array/pref_units_values"
         android:entries="@array/pref_units_options"/>
 

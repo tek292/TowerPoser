@@ -53,6 +53,21 @@ public class TowerPageFragment extends Fragment implements LoaderManager.LoaderC
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState)
     {
+        // If there's instance state, mine it for useful information.
+        // The end-goal here is that the user never knows that turning their device sideways
+        // does crazy lifecycle related things.  It should feel like some stuff stretched out,
+        // or magically appeared to take advantage of room, but data or place in the app was never
+        // actually *lost*.
+        if (savedInstanceState != null && savedInstanceState.containsKey(Consts.getLatitude())) {
+            String latitude = (String) savedInstanceState.get(Consts.getLatitude());
+            String longitude = (String) savedInstanceState.get(Consts.getLongitude());
+            mUri = TowerContract.DbLocationTower.buildLocationToTowerWithCoordinates(
+                    Double.parseDouble(latitude), Double.parseDouble(longitude));
+            // The listview probably hasn't even been populated yet.  Actually perform the
+            // swapout in onLoadFinished.
+//            mPosition = savedInstanceState.getInt(SELECTED_KEY);
+        }
+
         View rootView = inflater.inflate(R.layout.fragment_tower_page, container, false);
 
         setUpViews(rootView);
@@ -65,6 +80,21 @@ public class TowerPageFragment extends Fragment implements LoaderManager.LoaderC
     {
         getLoaderManager().initLoader(TOWER_LOADER, null, this);
         super.onActivityCreated(savedInstanceState);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        // When devices rotate, the currently selected list item needs to be saved.
+        // When no item is selected, mPosition will be set to Listview.INVALID_POSITION,
+        // so check for that before storing.
+        String[] coordinates = TowerContract.DbLocationTower.getLocationToTowerFromUri(mUri);
+        outState.putString(Consts.getLatitude(), coordinates[0]);
+        outState.putString(Consts.getLongitude(), coordinates[1]);
+
+//        if (mPosition != ListView.INVALID_POSITION) {
+//            outState.putInt(SELECTED_KEY, mPosition);
+//        }
+        super.onSaveInstanceState(outState);
     }
 
     @Override

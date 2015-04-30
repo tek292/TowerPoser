@@ -35,6 +35,7 @@ public class TowerContract
         public static final String COLUMN_RELIABILITY = "_reliability";
         public static final String COLUMN_SAMPLE_SIZE_RSSI = "_sample_size_rssi";
         public static final String COLUMN_UPLOAD_SPEED = "_upload_speed";
+        public static final String COLUMN_TIME_STAMP = "_time_stamp";
 
         public static Uri buildTowerUri(long id)
         {
@@ -53,7 +54,7 @@ public class TowerContract
                     + COLUMN_PING_TIME + " REAL, " + COLUMN_UPLOAD_SPEED + " REAL, "
                     + COLUMN_DOWNLOAD_SPEED + " REAL, " + COLUMN_SAMPLE_SIZE_RSSI + " INTEGER, "
                     + COLUMN_AVERAGE_RSSI_ASU + " REAL, " + COLUMN_AVERAGE_RSSI_DB + " REAL, "
-                    + COLUMN_NETWORK_TYPE + " INTEGER);";
+                    + COLUMN_NETWORK_TYPE + " INTEGER, " + COLUMN_TIME_STAMP + " INTEGER);";
         }
     }
 
@@ -147,7 +148,7 @@ public class TowerContract
                     + "FOREIGN KEY (" + COLUMN_LOCATION_ID + ") REFERENCES "
                     + DbLocation.TABLE_NAME + " (" + DbLocation._ID + "), "
                     + "FOREIGN KEY (" + COLUMN_TOWER_ID + ") REFERENCES "
-                    + DbTower.TABLE_NAME + " (" + DbTower._ID + "), "
+                    + DbTower.TABLE_NAME + " (" + DbTower._ID + ") ON DELETE CASCADE, "
                     + "UNIQUE (" + COLUMN_LOCATION_ID + ", " + COLUMN_TOWER_ID
                     + ") ON CONFLICT REPLACE);";
         }

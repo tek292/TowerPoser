@@ -23,15 +23,16 @@
     <string name="pref_distance_default">10</string>
     <string name="pref_distance_km">%s km</string>
     <string name="pref_distance_mi">%s mi</string>
-    <string name="pref_distance_error">The distance must be 25 miles or less</string>
+    <string name="pref_distance_mi_error">The distance must be 6 miles or less</string>
+    <string name="pref_distance_km_error">The distance must be 10 kilometers or less</string>
 
     <!-- Distance units preference -->
     <string name="pref_units_label">Distance Units</string>
     <string name="pref_units_key" translatable="false">units</string>
-    <string name="pref_units_metric" translatable="false">metric</string>
-    <string name="pref_units_imperial" translatable="false">imperial</string>
-    <string name="pref_units_label_metric">Metric</string>
-    <string name="pref_units_label_imperial">Imperial</string>
+    <string name="pref_units_kilometer" translatable="false">kilometers</string>
+    <string name="pref_units_mile" translatable="false">miles</string>
+    <string name="pref_units_label_kilometer">Kilometers</string>
+    <string name="pref_units_label_mile">Miles</string>
 
     <!-- Notifications preference -->
     <string name="pref_enable_notifications_key" translatable="false">enable_notifications</string>

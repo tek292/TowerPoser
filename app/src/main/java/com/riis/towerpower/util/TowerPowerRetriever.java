@@ -18,6 +18,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Calendar;
 import java.util.Iterator;
 
 /**
@@ -25,6 +26,7 @@ import java.util.Iterator;
  */
 public class TowerPowerRetriever
 {
+    private static final long ONE_DAY_IN_MILLIS = 86400000;
     private static final String AVERAGE_RSSI_ASU = "averageRssiAsu";
     private static final String AVERAGE_RSSI_DB = "averageRssiDb";
     private static final String DOWNLOAD_SPEED = "downloadSpeed";
@@ -187,11 +189,13 @@ public class TowerPowerRetriever
         long towerId;
 
         ContentValues towerValues = new ContentValues();
+        Calendar cal = Calendar.getInstance();
 
         towerValues.put(TowerContract.DbTower.COLUMN_NAME,
                 towerObject.getString(NETWORK_NAME));
         towerValues.put(TowerContract.DbTower.COLUMN_NETWORK_TYPE,
                 towerObject.getString(NETWORK_TYPE));
+        towerValues.put(TowerContract.DbTower.COLUMN_TIME_STAMP, cal.getTimeInMillis());
 
         if(towerObject.has(AVERAGE_RSSI_ASU))
         {
@@ -277,6 +281,13 @@ public class TowerPowerRetriever
 
         towerCursor.close();
         return towerId;
+    }
+
+    public void deleteOldTowers()
+    {
+        String selection = TowerContract.DbTower.COLUMN_TIME_STAMP + " <= ?";
+        String[] selectionArgs = {Long.toString(Calendar.getInstance().getTimeInMillis() - ONE_DAY_IN_MILLIS)};
+        mContext.getContentResolver().delete(TowerContract.DbTower.CONTENT_URI, selection, selectionArgs);
     }
 
     /**
