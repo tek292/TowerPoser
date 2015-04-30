@@ -118,11 +118,10 @@ public class TowerSyncAdapter extends AbstractThreadedSyncAdapter implements Loc
 
             if (!isGPSEnabled && !isNetworkEnabled)
             {
-//                showSettingsAlert();
+                showSettingsAlert();
             }
             else
             {
-                // First get location from Network Provider
                 if (isNetworkEnabled)
                 {
                     mLocation = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
@@ -140,7 +139,6 @@ public class TowerSyncAdapter extends AbstractThreadedSyncAdapter implements Loc
                     }
                 }
 
-                // if GPS Enabled get lat/long using GPS Services
                 if (isGPSEnabled)
                 {
                     if (mLocation == null)
@@ -230,31 +228,17 @@ public class TowerSyncAdapter extends AbstractThreadedSyncAdapter implements Loc
      */
     public static Account getSyncAccount(Context context)
     {
-        // Get an instance of the Android account manager
         AccountManager accountManager = (AccountManager) context.getSystemService(Context.ACCOUNT_SERVICE);
 
-        // Create the account type and default account
         Account newAccount = new Account(context.getString(R.string.app_name),
                 context.getString(R.string.sync_account_type));
 
-        // If the password doesn't exist, the account doesn't exist
         if(null == accountManager.getPassword(newAccount))
         {
-
-        /*
-         * Add the account and account type, no password or user data
-         * If successful, return the Account object, otherwise report an error.
-         */
             if (!accountManager.addAccountExplicitly(newAccount, "", null))
             {
                 return null;
             }
-            /*
-             * If you don't set android:syncable="true" in
-             * in your <provider> element in the manifest,
-             * then call ContentResolver.setIsSyncable(account, AUTHORITY, 1)
-             * here.
-             */
 
             onAccountCreated(newAccount, context);
         }
@@ -385,7 +369,4 @@ public class TowerSyncAdapter extends AbstractThreadedSyncAdapter implements Loc
 
         alertDialog.show();
     }
-
-
-    //TODO Organize this class
 }
