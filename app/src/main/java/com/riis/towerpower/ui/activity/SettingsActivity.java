@@ -1,6 +1,5 @@
 package com.riis.towerpower.ui.activity;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
 import android.preference.ListPreference;
@@ -116,17 +115,12 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
 
                 if(!currentUnit.equals(newUnit))
                 {
-                    SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-                    String distanceValue = preferences.getString(getString(R.string.pref_distance_key),
-                            getString(R.string.pref_distance_default));
-
-                    SharedPreferences.Editor editor = preferences.edit();
+                    String distanceValue = mEditTextPreference.getText();
 
                     if(newUnit.equals(getString(R.string.pref_units_label_mile)))
                     {
                         String newDistance = Double.toString(
                                 Consts.convertKilometersToMiles(Double.parseDouble(distanceValue)));
-                        editor.putString(getString(R.string.pref_distance_key), newDistance);
                         mEditTextPreference.setText(newDistance);
                         mEditTextPreference.setSummary(getString(R.string.pref_distance_mi, newDistance));
                     }
@@ -134,12 +128,9 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
                     {
                         String newDistance = Double.toString(
                                 Consts.convertMilesToKilometers(Double.parseDouble(distanceValue)));
-                        editor.putString(getString(R.string.pref_distance_key), newDistance);
                         mEditTextPreference.setText(newDistance);
                         mEditTextPreference.setSummary(getString(R.string.pref_distance_km, newDistance));
                     }
-
-                    editor.apply();
                 }
             }
         }

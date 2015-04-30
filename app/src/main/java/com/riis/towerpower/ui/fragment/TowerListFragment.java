@@ -13,6 +13,7 @@ import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -20,30 +21,26 @@ import com.riis.towerpower.R;
 import com.riis.towerpower.models.Consts;
 import com.riis.towerpower.models.TowerContract;
 import com.riis.towerpower.util.OnLocationChangedListener;
+import com.riis.towerpower.util.OnTowerSelectedListener;
 import com.riis.towerpower.util.TowerListAdapter;
 import com.riis.towerpower.util.sync.TowerSyncAdapter;
 
 /**
  * @author tkocikjr
  */
-public class TowerPageFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>,
+public class TowerListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>,
         OnLocationChangedListener
 {
     private static final int TOWER_LOADER = 0;
+    private static final String SELECTED_KEY = "selected";
+    private static final String[] TOWER_COLUMNS =
+            {
+                    TowerContract.DbTower.TABLE_NAME + "." + TowerContract.DbLocationTower._ID,
+                    TowerContract.DbTower.COLUMN_NAME,
+                    TowerContract.DbTower.COLUMN_NETWORK_TYPE
+            };
 
-    private static final String[] TOWER_COLUMNS = {
-            TowerContract.DbTower.TABLE_NAME + "." + TowerContract.DbLocationTower._ID,
-            TowerContract.DbTower.COLUMN_AVERAGE_RSSI_ASU,
-            TowerContract.DbTower.COLUMN_AVERAGE_RSSI_DB,
-            TowerContract.DbTower.COLUMN_DOWNLOAD_SPEED,
-            TowerContract.DbTower.COLUMN_NAME,
-            TowerContract.DbTower.COLUMN_NETWORK_TYPE,
-            TowerContract.DbTower.COLUMN_PING_TIME,
-            TowerContract.DbTower.COLUMN_RELIABILITY,
-            TowerContract.DbTower.COLUMN_SAMPLE_SIZE_RSSI,
-            TowerContract.DbTower.COLUMN_UPLOAD_SPEED
-    };
-
+    private int mPosition;
     private ListView mTowerList;
     private TextView mNoDataTextView;
     private TowerListAdapter mTowerListAdapter;
@@ -53,22 +50,16 @@ public class TowerPageFragment extends Fragment implements LoaderManager.LoaderC
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState)
     {
-        // If there's instance state, mine it for useful information.
-        // The end-goal here is that the user never knows that turning their device sideways
-        // does crazy lifecycle related things.  It should feel like some stuff stretched out,
-        // or magically appeared to take advantage of room, but data or place in the app was never
-        // actually *lost*.
-        if (savedInstanceState != null && savedInstanceState.containsKey(Consts.getLatitude())) {
+        if (savedInstanceState != null && savedInstanceState.containsKey(Consts.getLatitude()))
+        {
             String latitude = (String) savedInstanceState.get(Consts.getLatitude());
             String longitude = (String) savedInstanceState.get(Consts.getLongitude());
             mUri = TowerContract.DbLocationTower.buildLocationToTowerWithCoordinates(
                     Double.parseDouble(latitude), Double.parseDouble(longitude));
-            // The listview probably hasn't even been populated yet.  Actually perform the
-            // swapout in onLoadFinished.
-//            mPosition = savedInstanceState.getInt(SELECTED_KEY);
+            mPosition = savedInstanceState.getInt(SELECTED_KEY);
         }
 
-        View rootView = inflater.inflate(R.layout.fragment_tower_page, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_tower_list, container, false);
 
         setUpViews(rootView);
 
@@ -84,16 +75,14 @@ public class TowerPageFragment extends Fragment implements LoaderManager.LoaderC
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        // When devices rotate, the currently selected list item needs to be saved.
-        // When no item is selected, mPosition will be set to Listview.INVALID_POSITION,
-        // so check for that before storing.
         String[] coordinates = TowerContract.DbLocationTower.getLocationToTowerFromUri(mUri);
         outState.putString(Consts.getLatitude(), coordinates[0]);
         outState.putString(Consts.getLongitude(), coordinates[1]);
 
-//        if (mPosition != ListView.INVALID_POSITION) {
-//            outState.putInt(SELECTED_KEY, mPosition);
-//        }
+        if (mPosition != ListView.INVALID_POSITION)
+        {
+            outState.putInt(SELECTED_KEY, mPosition);
+        }
         super.onSaveInstanceState(outState);
     }
 
@@ -152,6 +141,21 @@ public class TowerPageFragment extends Fragment implements LoaderManager.LoaderC
 
         mTowerListAdapter = new TowerListAdapter(getActivity(), null);
         mTowerList.setAdapter(mTowerListAdapter);
+        mTowerList.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+            {
+                Cursor cursor = (Cursor) parent.getItemAtPosition(position);
+                if (cursor != null)
+                {
+                    ((OnTowerSelectedListener) getActivity()).onTowerSelected(
+                            TowerContract.DbTower.buildTowerUri(
+                                    cursor.getLong(cursor.getColumnIndex(TOWER_COLUMNS[0]))));
+                }
+                mPosition = position;
+            }
+        });
 
         refreshListLayout();
     }

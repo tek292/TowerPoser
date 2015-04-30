@@ -44,8 +44,8 @@ public class TowerSyncAdapter extends AbstractThreadedSyncAdapter implements Loc
     public static final int SYNC_INTERVAL = 60 * 180;
     public static final int SYNC_FLEXTIME = SYNC_INTERVAL/3;
 
-    private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10000; // 10 kilometers
-    private static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 1; // 1 minute
+    private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10000;
+    private static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 1;
     private static final int TOWER_NOTIFICATION_ID = 1992;
     private static final long DAY_IN_MILLIS = 1000 * 60 * 60 * 24;
 
@@ -107,15 +107,6 @@ public class TowerSyncAdapter extends AbstractThreadedSyncAdapter implements Loc
 
         cursor.close();
         notifyTower();
-
-        // Reference: http://stackoverflow.com/questions/4152373/how-to-know-location-area-code-and-cell-id-in-android-phone
-//            final TelephonyManager telephony = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-//            if (telephony.getPhoneType() == TelephonyManager.PHONE_TYPE_GSM) {
-//                final GsmCellLocation location = (GsmCellLocation) telephony.getCellLocation();
-//                if (location != null) {
-//                    Log.w("TESTING", "LAC: " + location.getLac() + " CID: " + location.getCid());
-//                }
-//            }
     }
 
     @Override

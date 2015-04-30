@@ -2,6 +2,7 @@ package com.riis.towerpower.ui.activity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
@@ -10,14 +11,19 @@ import android.view.MenuItem;
 
 import com.riis.towerpower.R;
 import com.riis.towerpower.models.Consts;
-import com.riis.towerpower.ui.fragment.TowerPageFragment;
+import com.riis.towerpower.ui.fragment.TowerDetailFragment;
+import com.riis.towerpower.ui.fragment.TowerListFragment;
+import com.riis.towerpower.util.OnTowerSelectedListener;
 import com.riis.towerpower.util.sync.TowerSyncAdapter;
 
 /**
  * @author tkocikjr
  */
-public class MainActivity extends ActionBarActivity
+public class MainActivity extends ActionBarActivity implements OnTowerSelectedListener
 {
+    private static final String DETAIL_FRAGMENT_TAG = "detailFragment";
+
+    private boolean mTwoPane;
     private Double mLatitude;
     private Double mLongitude;
 
@@ -27,9 +33,26 @@ public class MainActivity extends ActionBarActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if (savedInstanceState == null) {
+        if (findViewById(R.id.detail_container) != null)
+        {
+            mTwoPane = true;
+            if (savedInstanceState == null)
+            {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.detail_container, new TowerDetailFragment(), DETAIL_FRAGMENT_TAG)
+                        .commit();
+            }
+        }
+        else
+        {
+            mTwoPane = false;
+            getSupportActionBar().setElevation(0f);
+        }
+
+        if (savedInstanceState == null)
+        {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.tower_list_fragment, new TowerPageFragment())
+                    .add(R.id.tower_list_fragment, new TowerListFragment())
                     .commit();
         }
 
@@ -44,10 +67,12 @@ public class MainActivity extends ActionBarActivity
         Double longitude = Double.parseDouble(prefs.getString(Consts.getLongitude(), "-122.4058"));
 
         // update the location in our second pane using the fragment manager
-        if (!latitude.equals(mLatitude) || !longitude.equals(mLongitude)) {
-            TowerPageFragment ff = (TowerPageFragment)getSupportFragmentManager()
+        if (!latitude.equals(mLatitude) || !longitude.equals(mLongitude))
+        {
+            TowerListFragment ff = (TowerListFragment) getSupportFragmentManager()
                     .findFragmentById(R.id.tower_list_fragment);
-            if ( null != ff ) {
+            if ( null != ff )
+            {
                 ff.onLocationChanged();
             }
 //            DetailFragment df = (DetailFragment)getSupportFragmentManager().findFragmentByTag(DETAILFRAGMENT_TAG);
@@ -78,5 +103,27 @@ public class MainActivity extends ActionBarActivity
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onTowerSelected(Uri towerUri)
+    {
+        if (mTwoPane)
+        {
+            Bundle args = new Bundle();
+            args.putParcelable(TowerDetailFragment.DETAIL_URI, towerUri);
+
+            TowerDetailFragment fragment = new TowerDetailFragment();
+            fragment.setArguments(args);
+
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.detail_container, fragment, DETAIL_FRAGMENT_TAG)
+                    .commit();
+        }
+        else
+        {
+            Intent intent = new Intent(this, TowerDetailActivity.class).setData(towerUri);
+            startActivity(intent);
+        }
     }
 }
