@@ -1,7 +1,6 @@
 <resources xmlns:xliff="http://schemas.android.com/apk/res-auto">
     <string name="app_name">Tower Power</string>
 
-    <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
 
     <string name="retrieving_tower_info">Retrieving cell tower information…</string>
@@ -14,11 +13,38 @@
     <string name="gps_not_enabled_title">GPS Settings</string>
     <string name="gps_not_enabled_message">GPS is not enabled. Do you want to go to settings menu?</string>
 
+    <string name="reliability_label">Reliability</string>
+
+    <string name="no_data_in_network">There are no cell towers with this network!</string>
+
+    <!-- Distance preference -->
     <string name="pref_distance_key">distance</string>
     <string name="pref_distance_title">Distance</string>
     <string name="pref_distance_default">10</string>
-    <string name="reliability_label">Reliability</string>
-    <string name="no_data_in_network">There are no cell towers with this network!</string>
+    <string name="pref_distance_km">%s km</string>
+    <string name="pref_distance_mi">%s mi</string>
+    <string name="pref_distance_error">The distance must be 25 miles or less</string>
+
+    <!-- Distance units preference -->
+    <string name="pref_units_label">Distance Units</string>
+    <string name="pref_units_key" translatable="false">units</string>
+    <string name="pref_units_metric" translatable="false">metric</string>
+    <string name="pref_units_imperial" translatable="false">imperial</string>
+    <string name="pref_units_label_metric">Metric</string>
+    <string name="pref_units_label_imperial">Imperial</string>
+
+    <!-- Notifications preference -->
+    <string name="pref_enable_notifications_key" translatable="false">enable_notifications</string>
+    <string name="pref_enable_notifications_label">Tower Notifications</string>
+    <string name="pref_enable_notifications_true">Enabled</string>
+    <string name="pref_enable_notifications_false">Not Enabled</string>
+    <string name="pref_enable_notifications_default" translatable="false">true</string>
+    <string name="pref_last_notification" translatable="false">last_notification</string>
+
+    <!-- SyncAdapter related -->
+    <string name="sync_account_type">towerpower.riis.com</string>
+    <string name="content_authority">com.riis.towerpower</string>
+
 
 
 
@@ -29,49 +55,17 @@
     <string name="title_activity_detail">Details</string>
     <string name="title_activity_settings">Settings</string>
 
-    <!-- Strings related to Notification Enabled preference -->
-    <string name="pref_enable_notifications_key" translatable="false">enable_notifications</string>
-    <string name="pref_enable_notifications_label">Weather Notifications</string>
-
-    <string name="pref_enable_notifications_true">Enabled</string>
-    <string name="pref_enable_notifications_false">Not Enabled</string>
-    <string name="pref_enable_notifications_default" translatable="false">true</string>
-
     <!-- Strings for formatting weather-related data -->
-
-    <!-- Label for the temperature units preference [CHAR LIMIT=30] -->
-    <string name="pref_units_label">Temperature Units</string>
-
-    <!-- Label for metric option in temperature unit preference [CHAR LIMIT=25] -->
-    <string name="pref_units_label_metric">Metric</string>
-
-    <!-- Label for imperial option in temperature unit preference [CHAR LIMIT=25] -->
-    <string name="pref_units_label_imperial">Imperial</string>
-
-    <!-- Key name for temperature unit preference in SharedPreferences [CHAR LIMIT=NONE] -->
-    <string name="pref_units_key" translatable="false">units</string>
-
-    <!-- Value in SharedPreferences for metric temperature unit option [CHAR LIMIT=NONE] -->
-    <string name="pref_units_metric" translatable="false">metric</string>
-
-    <!-- Value in SharedPreferences for imperial temperature unit option [CHAR LIMIT=NONE] -->
-    <string name="pref_units_imperial" translatable="false">imperial</string>
-
-
     <!-- Language-specific constants -->
     <string name="today">Today</string>
-
     <!-- For labelling tomorrow's forecast [CHAR LIMIT=15] -->
     <string name="tomorrow">Tomorrow</string>
-
     <!-- Date format [CHAR LIMIT=NONE] -->
     <string name="format_full_friendly_date"><xliff:g id="month">%1$s</xliff:g>,
         <xliff:g id="day">%2$s</xliff:g></string>
-
     <!-- Strings for formatting weather-related data -->
     <!-- Temperature format [CHAR LIMIT=5 -->
     <string name="format_temperature"><xliff:g id="temp">%1.0f</xliff:g>\u00B0</string>
-
     <!-- Windspeed formats -->
     <!-- Wind in mph [CHAR LIMIT=25] -->
     <string name="format_wind_mph">Wind: <xliff:g id="speed">%1$1.0f</xliff:g> mph
@@ -79,21 +73,12 @@
     <!-- Wind in kph [CHAR LIMIT=25] -->
     <string name="format_wind_kmh">Wind: <xliff:g id="speed">%1$1.0f</xliff:g> km/h
         <xliff:g id="direction">%2$s</xliff:g></string>
-
     <!-- Pressure format CHAR LIMIT=25] -->
     <string name="format_pressure">Pressure: <xliff:g id="pressure">%1.0f</xliff:g> hPa</string>
-
     <!-- Humidity format CHAR LIMIT=25]-->
     <string name="format_humidity">Humidity: <xliff:g id="humidity">%1.0f</xliff:g> %%</string>
-
-    <!-- SyncAdapter related -->
-    <string name="sync_account_type">towerpower.riis.com</string>
-    <string name="content_authority">com.riis.towerpower</string>
 
     <!-- Notification Format -->
     <string name="format_notification">Forecast: <xliff:g id="condition">%1$s</xliff:g>
         High: <xliff:g id="high">%2$s</xliff:g> Low: <xliff:g id="low">%3$s</xliff:g></string>
-
-    <!-- Strings related to Notification preference -->
-    <string name="pref_last_notification">last_notification</string>
 </resources>

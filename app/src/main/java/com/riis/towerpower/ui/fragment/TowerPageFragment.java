@@ -33,9 +33,15 @@ public class TowerPageFragment extends Fragment implements LoaderManager.LoaderC
 
     private static final String[] TOWER_COLUMNS = {
             TowerContract.DbTower.TABLE_NAME + "." + TowerContract.DbLocationTower._ID,
-//            TowerContract.DbLocation.COLUMN_LATITUDE,
-//            TowerContract.DbLocation.COLUMN_LONGITUDE,
-            TowerContract.DbTower.COLUMN_NAME
+            TowerContract.DbTower.COLUMN_AVERAGE_RSSI_ASU,
+            TowerContract.DbTower.COLUMN_AVERAGE_RSSI_DB,
+            TowerContract.DbTower.COLUMN_DOWNLOAD_SPEED,
+            TowerContract.DbTower.COLUMN_NAME,
+            TowerContract.DbTower.COLUMN_NETWORK_TYPE,
+            TowerContract.DbTower.COLUMN_PING_TIME,
+            TowerContract.DbTower.COLUMN_RELIABILITY,
+            TowerContract.DbTower.COLUMN_SAMPLE_SIZE_RSSI,
+            TowerContract.DbTower.COLUMN_UPLOAD_SPEED
     };
 
     private ListView mTowerList;
