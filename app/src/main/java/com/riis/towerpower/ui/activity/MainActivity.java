@@ -22,6 +22,7 @@ import com.riis.towerpower.util.sync.TowerSyncAdapter;
 public class MainActivity extends ActionBarActivity implements OnTowerSelectedListener
 {
     private static final String DETAIL_FRAGMENT_TAG = "detailFragment";
+    private static final String LIST_FRAGMENT_TAG = "listFragment";
 
     private boolean mTwoPane;
     private Double mLatitude;
@@ -52,7 +53,7 @@ public class MainActivity extends ActionBarActivity implements OnTowerSelectedLi
         if (savedInstanceState == null)
         {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.tower_list_fragment, new TowerListFragment())
+                    .replace(R.id.tower_list_fragment, new TowerListFragment(), LIST_FRAGMENT_TAG)
                     .commit();
         }
 
@@ -69,7 +70,7 @@ public class MainActivity extends ActionBarActivity implements OnTowerSelectedLi
         if (!latitude.equals(mLatitude) || !longitude.equals(mLongitude))
         {
             TowerListFragment listFragment = (TowerListFragment) getSupportFragmentManager()
-                    .findFragmentById(R.id.tower_list_fragment);
+                    .findFragmentByTag(LIST_FRAGMENT_TAG);
             if (listFragment != null)
             {
                 listFragment.onLocationChanged();

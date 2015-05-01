@@ -7,9 +7,11 @@
     android:divider="?android:attr/dividerHorizontal"
     android:orientation="horizontal"
     tools:context="com.riis.towerpower.ui.activity.MainActivity">
-    <fragment
+
+    <!-- The Sunshine app example used a fragment here. The problem is that the listView would -->
+    <!-- display twice and only one would be scrollable. Not sure why this happened. TODO ask -->
+    <FrameLayout
         android:id="@+id/tower_list_fragment"
-        android:name="com.riis.towerpower.ui.fragment.TowerListFragment"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="2"
