@@ -66,19 +66,22 @@ public class MainActivity extends ActionBarActivity implements OnTowerSelectedLi
         Double latitude = Double.parseDouble(prefs.getString(Consts.getLatitude(), "37.7907"));
         Double longitude = Double.parseDouble(prefs.getString(Consts.getLongitude(), "-122.4058"));
 
-        // update the location in our second pane using the fragment manager
         if (!latitude.equals(mLatitude) || !longitude.equals(mLongitude))
         {
-            TowerListFragment ff = (TowerListFragment) getSupportFragmentManager()
+            TowerListFragment listFragment = (TowerListFragment) getSupportFragmentManager()
                     .findFragmentById(R.id.tower_list_fragment);
-            if ( null != ff )
+            if (listFragment != null)
             {
-                ff.onLocationChanged();
+                listFragment.onLocationChanged();
             }
-//            DetailFragment df = (DetailFragment)getSupportFragmentManager().findFragmentByTag(DETAILFRAGMENT_TAG);
-//            if ( null != df ) {
-//                df.onLocationChanged(location);
-//            }
+
+            TowerDetailFragment detailFragment = (TowerDetailFragment) getSupportFragmentManager()
+                    .findFragmentByTag(DETAIL_FRAGMENT_TAG);
+            if (detailFragment != null)
+            {
+                onTowerSelected(null);
+            }
+
             mLatitude = latitude;
             mLongitude = longitude;
         }

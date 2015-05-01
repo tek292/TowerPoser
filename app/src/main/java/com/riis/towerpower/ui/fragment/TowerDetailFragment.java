@@ -1,6 +1,5 @@
 package com.riis.towerpower.ui.fragment;
 
-import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;

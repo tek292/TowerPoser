@@ -26,9 +26,7 @@ public class TowerListAdapter extends CursorAdapter
     public View newView(Context context, Cursor cursor, ViewGroup parent)
     {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_tower, parent, false);
-        TowerListViewHolder viewHolder = new TowerListViewHolder();
-        viewHolder.networkNameImage = (ImageView) v.findViewById(R.id.network_name_image_view);
-        viewHolder.networkName = (TextView) v.findViewById(R.id.network_name_text_view);
+        TowerListViewHolder viewHolder = new TowerListViewHolder(v);
         v.setTag(viewHolder);
         return v;
     }
@@ -62,13 +60,17 @@ public class TowerListAdapter extends CursorAdapter
         }
 
         viewHolder.networkName.setText(networkName);
-
-//        viewHolder.reliability.setText(cursor.getString(cursor.getColumnIndex(TowerContract.DbTower.COLUMN_RELIABILITY)));
     }
 
     private static class TowerListViewHolder
     {
         ImageView networkNameImage;
         TextView networkName;
+
+        private TowerListViewHolder(View rowView)
+        {
+            networkNameImage = (ImageView) rowView.findViewById(R.id.network_name_image_view);
+            networkName = (TextView) rowView.findViewById(R.id.network_name_text_view);
+        }
     }
 }

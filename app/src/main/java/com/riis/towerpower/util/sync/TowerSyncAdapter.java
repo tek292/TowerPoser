@@ -60,8 +60,17 @@ public class TowerSyncAdapter extends AbstractThreadedSyncAdapter implements Loc
         super(context, autoInitialize);
         mContext = context;
         mLocationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
-        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_BW_UPDATES,
-                MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
+
+        try
+        {
+            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_BW_UPDATES,
+                    MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
+        }
+        catch (Exception e)
+        {
+            mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME_BW_UPDATES,
+                    MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
+        }
     }
 
     @Override
