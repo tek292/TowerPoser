@@ -16,6 +16,8 @@
         android:id="@+id/no_data_textview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/no_data_in_network"
+        android:text="@string/loading_cell_towers"
+        android:textSize="20sp"
+        android:gravity="center"
         android:visibility="gone"/>
 </FrameLayout>

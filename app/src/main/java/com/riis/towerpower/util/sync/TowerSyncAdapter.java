@@ -45,7 +45,7 @@ public class TowerSyncAdapter extends AbstractThreadedSyncAdapter implements Loc
     public static final int SYNC_FLEXTIME = SYNC_INTERVAL/3;
 
     private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10000;
-    private static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 1;
+    private static final long MIN_TIME_BW_UPDATES = 1000 * 60;
     private static final int TOWER_NOTIFICATION_ID = 1992;
     private static final long DAY_IN_MILLIS = 1000 * 60 * 60 * 24;
 
@@ -280,7 +280,6 @@ public class TowerSyncAdapter extends AbstractThreadedSyncAdapter implements Loc
     private void notifyTower()
     {
         Context context = getContext();
-        //checking the last update and notify if it' the first of the day
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String displayNotificationsKey = context.getString(R.string.pref_enable_notifications_key);
         boolean displayNotifications = prefs.getBoolean(displayNotificationsKey,
@@ -297,42 +296,23 @@ public class TowerSyncAdapter extends AbstractThreadedSyncAdapter implements Loc
                         Double.parseDouble(prefs.getString(Consts.getLatitude(), "37.7907")),
                         Double.parseDouble(prefs.getString(Consts.getLongitude(), "-122.4058")));
 
-                // we'll query our contentProvider, as always
                 Cursor cursor = context.getContentResolver().query(uri, null, null, null, null);
 
                 if (cursor.moveToFirst()) {
-//                    int weatherId = cursor.getInt(INDEX_WEATHER_ID);
-//                    double high = cursor.getDouble(INDEX_MAX_TEMP);
-//                    double low = cursor.getDouble(INDEX_MIN_TEMP);
-//                    String desc = cursor.getString(INDEX_SHORT_DESC);
-//
-//                    int iconId = Utility.getIconResourceForWeatherCondition(weatherId);
                     Resources resources = context.getResources();
-//                    Bitmap largeIcon = BitmapFactory.decodeResource(resources,
-//                            Utility.getArtResourceForWeatherCondition(weatherId));
                     String title = context.getString(R.string.app_name);
 
-                    // Define the text of the forecast.
-                    String contentText = "There are new towers!";
+                    String contentText = mContext.getString(R.string.new_towers);
 
-                    // NotificationCompatBuilder is a very convenient way to build backward-compatible
-                    // notifications.  Just throw in some data.
                     NotificationCompat.Builder mBuilder =
                             new NotificationCompat.Builder(getContext())
                                     .setColor(resources.getColor(android.R.color.holo_blue_light))
                                     .setSmallIcon(R.mipmap.ic_launcher)
-//                                    .setLargeIcon(largeIcon)
                                     .setContentTitle(title)
                                     .setContentText(contentText);
 
-                    // Make something interesting happen when the user clicks on the notification.
-                    // In this case, opening the app is sufficient.
                     Intent resultIntent = new Intent(context, MainActivity.class);
 
-                    // The stack builder object will contain an artificial back stack for the
-                    // started Activity.
-                    // This ensures that navigating backward from the Activity leads out of
-                    // your application to the Home screen.
                     TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
                     stackBuilder.addNextIntent(resultIntent);
                     PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(
@@ -341,10 +321,8 @@ public class TowerSyncAdapter extends AbstractThreadedSyncAdapter implements Loc
 
                     NotificationManager mNotificationManager =
                             (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
-                    // TOWER_NOTIFICATION_ID allows you to update the notification later on.
                     mNotificationManager.notify(TOWER_NOTIFICATION_ID, mBuilder.build());
 
-                    //refreshing last sync
                     SharedPreferences.Editor editor = prefs.edit();
                     editor.putLong(lastNotificationKey, System.currentTimeMillis());
                     editor.apply();

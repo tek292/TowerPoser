@@ -7,15 +7,26 @@
 
     <ImageView
         android:id="@+id/network_name_image_view"
+        android:contentDescription="@string/tower_network_desc"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginLeft="5dp"
-        android:layout_marginStart="5dp"
-        android:layout_marginBottom="5dp"
+        android:layout_margin="5dp"
         android:layout_gravity="center_vertical"/>
+
     <TextView
         android:id="@+id/network_name_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:textSize="20sp"/>
+
+    <TextView
+        android:id="@+id/network_type_text_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="match_parent"
+        android:layout_marginRight="15dp"
+        android:layout_marginEnd="15dp"
+        android:layout_gravity="end"
+        android:gravity="center_vertical|end"
+        android:textSize="20sp"/>
 </LinearLayout>

@@ -95,7 +95,7 @@ public class TowerListFragment extends Fragment implements LoaderManager.LoaderC
                 Double.parseDouble(prefs.getString(Consts.getLatitude(), "37.7907")),
                 Double.parseDouble(prefs.getString(Consts.getLongitude(), "-122.4058")));
 
-        String sortOrder = TowerContract.DbTower.COLUMN_NETWORK_TYPE + " ASC";
+        String sortOrder = TowerContract.DbTower.COLUMN_NETWORK_TYPE + " DESC";
 
         return new CursorLoader(getActivity(), mUri, TOWER_COLUMNS, null, null, sortOrder);
     }

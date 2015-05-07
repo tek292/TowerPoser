@@ -7,5 +7,5 @@ import android.net.Uri;
  */
 public interface OnTowerSelectedListener
 {
-    public void onTowerSelected(Uri towerUri);
+    void onTowerSelected(Uri towerUri);
 }

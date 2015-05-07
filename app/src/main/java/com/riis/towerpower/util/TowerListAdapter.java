@@ -60,17 +60,22 @@ public class TowerListAdapter extends CursorAdapter
         }
 
         viewHolder.networkName.setText(networkName);
+
+        String networkType = cursor.getString(cursor.getColumnIndex(TowerContract.DbTower.COLUMN_NETWORK_TYPE));
+        viewHolder.networkType.setText(context.getString(R.string.network_type_s, networkType));
     }
 
     private static class TowerListViewHolder
     {
         ImageView networkNameImage;
         TextView networkName;
+        TextView networkType;
 
         private TowerListViewHolder(View rowView)
         {
             networkNameImage = (ImageView) rowView.findViewById(R.id.network_name_image_view);
             networkName = (TextView) rowView.findViewById(R.id.network_name_text_view);
+            networkType = (TextView) rowView.findViewById(R.id.network_type_text_view);
         }
     }
 }
