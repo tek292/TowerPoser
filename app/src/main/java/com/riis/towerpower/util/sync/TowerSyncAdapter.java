@@ -38,6 +38,9 @@ import org.json.JSONException;
 
 /**
  * @author tkocikjr
+ *
+ * Location code based on the following reference. Altered to fit the purpose of the project.
+ * Reference: http://www.androidhive.info/2012/07/android-gps-location-manager-tutorial
  */
 public class TowerSyncAdapter extends AbstractThreadedSyncAdapter implements LocationListener
 {
