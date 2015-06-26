@@ -69,6 +69,7 @@ public class TowerDetailFragment extends Fragment implements LoaderManager.Loade
             mUri = arguments.getParcelable(DETAIL_URI);
         }
 
+
         View rootView = inflater.inflate(R.layout.fragment_tower_details, container, false);
         setUpView(rootView);
         setUpListeners();
@@ -78,7 +79,7 @@ public class TowerDetailFragment extends Fragment implements LoaderManager.Loade
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState)
     {
-        getLoaderManager().initLoader(DETAIL_LOADER, null, this);
+        getLoaderManager().initLoader(DETAIL_LOADER, savedInstanceState, this);
         super.onActivityCreated(savedInstanceState);
     }
 
@@ -104,6 +105,10 @@ public class TowerDetailFragment extends Fragment implements LoaderManager.Loade
     @Override
     public void onLoaderReset(Loader<Cursor> loader)
     {
+    }
+
+    public Uri getDetailUri() {
+        return mUri;
     }
 
     private void setUpView(View view)

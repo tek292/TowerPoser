@@ -80,7 +80,7 @@ public class MainActivity extends ActionBarActivity implements OnTowerSelectedLi
                     .findFragmentByTag(DETAIL_FRAGMENT_TAG);
             if (detailFragment != null)
             {
-                onTowerSelected(null);
+                onTowerSelected(detailFragment.getDetailUri());
             }
 
             mLatitude = latitude;
